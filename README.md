@@ -146,7 +146,7 @@
 
 最關鍵的發現：這兩個 API **零 captcha、零 cookie**，意味著可以用最簡單的方式（curl）直接呼叫，完全不需要瀏覽器。
 
-### 情境 4-2: 自動化建立 Tradovate trial account 讓我在模擬倉練習交易
+### 情境 3: 自動化建立 Tradovate trial account 讓我在模擬倉練習交易
 
 > [`tradovate-new.sh`](portfolio/ai-collaboration/experience/trading/scripts/tradovate-new.sh) + [`tradovate-signup.sh`](portfolio/ai-collaboration/experience/trading/scripts/tradovate-signup.sh)
 > ⚠️ 腳本中的 API 路徑已去識別化，避免在公開平台透露第三方服務的內部 API path
