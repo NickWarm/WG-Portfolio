@@ -79,7 +79,7 @@
 
 ### 情境 3: 快速定位影片的幾分幾秒
 
-> ['/vck'](portfolio/ai-collaboration/experience/trading/skills/vck.md) + ['/transcribe'](portfolio/ai-collaboration/experience/trading/skills/transcribe.md)
+> [`/vck`](portfolio/ai-collaboration/experience/trading/skills/vck.md) + [`/transcribe`å](portfolio/ai-collaboration/experience/trading/skills/transcribe.md)
 
 但是還有個問題，我只是在 NLM 上面討論，我還是需要回頭看老師的影片才能真正吸收
 
