@@ -1,18 +1,16 @@
-# 作品集
+# Experience
 
-## 關於
+## Trading
 
-（一段自我介紹：你的定位、專長、想找什麼樣的機會）
+> [Trading-OVERVIEW.md](ai-collaboration/experience/trading/Trading-OVERVIEW.md)
 
-## 履歷
+交易學習 + Pine Script 開發
+依據所需要的各種場景，開發出各種 skill 自動化各種流程
+從「怎麼用 AI 加速學習不熟的領域」到「逆向分析網頁 API 自動化註冊」，完整記錄發想過程與技術突破
 
-- [泛用版](resume/general/) — 公司需求不明確時的版本
-- [客製版](resume/tailored/) — 針對特定公司需求調整，亦展示我的客製能力
-- 素材庫：`resume/master.md`
+## Eagle
 
-## AI 協作 / Agent 設計
+> [Trading-OVERVIEW.md](ai-collaboration/experience/eagle/Eagle-OVERVIEW.md)
 
-我的核心展示：[ai-collaboration/](ai-collaboration/)
-
-- **experience/** — 已驗證的實戰案例（Eagle、Trading）
-- **proposals/** — 針對目標公司的概念設計（未驗證，呈現思路）
+把「飛鷹地產」的後端，從 ASP.NET + mssql 轉成 NestJS + PostgreSQL
+在軟體開發時，為了工作所開發的各種 skills
