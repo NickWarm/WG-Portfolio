@@ -15,7 +15,7 @@ allowed-tools: Bash, Read, Write
 HONRUCH_REPO  = /Users/nicholas/Desktop/Projects/104-jobhunt
 FETCH_SCRIPT  = $HONRUCH_REPO/scripts/job-detail.mjs
 SHARED_DOC    = $HONRUCH_REPO/modes/_shared.md
-PROPOSALS_DIR = /Users/nicholas/Desktop/WG-Portfolio/portfolio/ai-collaboration/proposals
+PROPOSALS_DIR = /Users/nicholas/Desktop/WG-Portfolio/workspace/proposals
 OUTPUT_PATH   = $PROPOSALS_DIR/<folder>/job_description.md
 ```
 
@@ -80,7 +80,7 @@ node /Users/nicholas/Desktop/WG-Portfolio/portfolio/ai-collaboration/skills/fetc
 
 ### 步驟 3：寫入 job_description.md
 
-對齊 `proposals/1_doctorally_ai_automation_planner/job_description.md` 的格式：
+對齊 `workspace/proposals/2_doctorally_ai_automation_planner/job_description.md` 的格式：
 
 ```
 {title}

@@ -10,7 +10,7 @@
 
 ## Eagle
 
-> [Trading-OVERVIEW.md](ai-collaboration/experience/eagle/Eagle-OVERVIEW.md)
+> [Eagle-OVERVIEW.md](ai-collaboration/experience/eagle/Eagle-OVERVIEW.md)
 
 把「飛鷹地產」的後端，從 ASP.NET + mssql 轉成 NestJS + PostgreSQL
 在軟體開發時，為了工作所開發的各種 skills

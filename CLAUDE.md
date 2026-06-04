@@ -9,13 +9,13 @@
 | `portfolio/resume/` | 履歷（泛用版 / 客製版 / 素材庫） |
 | `portfolio/imgs/` | 文件用圖片（**已版控**，可壓縮覆寫，需要時 `git checkout` 還原） |
 | `portfolio/ai-collaboration/experience/` | 實戰案例（eagle、trading）——**展示素材**，多由其他專案搬來，非本 repo 運作的系統 |
-| `portfolio/ai-collaboration/proposals/` | 針對目標公司的概念設計——**展示素材**，未驗證 |
 | `portfolio/ai-collaboration/skills/` | **本 repo 實際在用的 skill**（見下） |
-| `workspace/` | 過渡討論、求職準備——僅本機，已 `.gitignore` |
+| `workspace/` | 過渡討論、求職準備、**proposals（針對目標公司的概念設計，未驗證）**——僅本機，已 `.gitignore` |
 
-> ⚠️ `experience/` 與 `proposals/` 底下的 `*_skill_proposal.md`、design-docs 是**作品集內容**，
+> ⚠️ `experience/` 底下的 `*_skill_proposal.md`、design-docs 是**作品集內容**，
 > 用來呈現我駕馭 Claude Code 的思路，**不是**本 repo 安裝啟用的 skill。
 > 本 repo 真正掛載運作的 skill 只有 `skills/` 底下那幾支。
+> proposals 為未驗證的概念設計，已移到 `workspace/proposals/`（本機留存、不版控）。
 
 ## Skill 配置慣例（重要）
 
@@ -24,7 +24,7 @@
 | Skill | 用途 |
 | ----- | ---- |
 | `compress-img` | 智慧壓縮圖片：PNG→optipng 無損、JPG→djpeg\|cjpeg 有損 q80，預設覆寫原檔 |
-| `fetch-jd` | 抓 104 職缺 JD 寫成 `job_description.md` 到 proposals 資料夾 |
+| `fetch-jd` | 抓 104 職缺 JD 寫成 `job_description.md` 到 `workspace/proposals/` 資料夾 |
 
 **配置原則 —— skill 真檔放在 repo，靠 symlink 掛到 `~/.claude`，不把配置寫進 `.claude`：**
 

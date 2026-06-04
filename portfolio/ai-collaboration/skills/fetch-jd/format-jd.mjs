@@ -12,7 +12,7 @@ import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const FETCH_SCRIPT = "/Users/nicholas/Desktop/Projects/104-jobhunt/scripts/job-detail.mjs";
-const PROPOSALS_DIR = "/Users/nicholas/Desktop/WG-Portfolio/portfolio/ai-collaboration/proposals";
+const PROPOSALS_DIR = "/Users/nicholas/Desktop/WG-Portfolio/workspace/proposals";
 
 function parseArgs(argv) {
   const out = { input: "", folder: "", force: false };
