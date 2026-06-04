@@ -10,7 +10,7 @@
 
 最後我甚至用 AI 在看盤軟體 TradingView 寫 pine script 語法，完全從零重現 eli 老師的交易指標。
 
-這邊不會透露 pine script 的程式碼，但會說明我在學習與實作時的思路
+這邊不會透露 pine script 的程式碼，但會說明我在學習與實作時的思路。
 
 ---
 
@@ -33,7 +33,7 @@
 
 ![img](portfolio/imgs/Trading/0_terminal.jpg)
 
-軟體工程師在開發程式時，都會 GitHub 的 open source，像我最熟悉的程式語言 Ruby，與 Ruby On Rails 框架，都是可以看得到程式碼的 open source。 
+軟體工程師在開發程式時，都會 [GitHub](https://github.com/) 的 open source，像我最熟悉的程式語言 [Ruby](https://github.com/ruby/ruby)，與 [Ruby On Rails](https://github.com/rails/rails) 框架，都是可以看得到程式碼的 open source。 
 
 在沒有 AI 的年代，針對要研究與開發的項目，我們會習慣用 google 去找各種文獻與 open source。
 
