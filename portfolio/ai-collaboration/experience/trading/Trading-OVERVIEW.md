@@ -16,20 +16,18 @@
 
 ## AI 時代如何學習
 
-> 最初的最初，闡述我如何思考與使用 AI 輔助我學習，以及我如何把這些流程自動化
-
-### 情境 1: 快速學習
+首先，我會闡述我如何思考與使用 AI 輔助我學習，以及我如何把這些流程自動化
 
 我為了要學習我不熟的外匯與期貨交易。
 
-我直覺想到的是用 [NotebookLM](https://notebooklm.google.com/) 把，我購買的教學影片與直撥影片丟到 NotebookLM，然後來提問，快速理解概念
+我直覺想到的是用 [NotebookLM](https://notebooklm.google.com/) 把，我購買的教學影片與直撥影片丟到 NotebookLM (簡稱 `NLM`)，然後來提問，快速理解概念
 
-但我這邊遇到的第一個痛點：影片非常的多，我不想一個一個網址複製，然後去 NotebookLM 貼上，這件事應該要自動化才對
+但我這邊遇到的第一個痛點：影片非常的多，我不想一個一個網址複製，然後去 NLM 貼上，這件事應該要自動化才對
 
 ![img](../../../imgs/Trading/1_live_stream.jpg)
 
 
-### 思考與操作方式
+### 情境 1: 如何用已有的 AI 與各種 open source 加速學習不熟悉的領域
 
 在 AI 時代，軟體開發會用終端機 (terminal) 跟 Claude Code 協作。
 
@@ -46,196 +44,154 @@
 關鍵：我應該 **在 terminal 讓 AI 自己去 github 搜尋，而不是讓 AI 像人一樣打開瀏覽器，去 google 上面搜尋**
 
 所以我會安裝 [Github CLI](https://cli.github.com/) (簡稱 `gh`) 然後，我就可以在 terminal 
-1. 叫 Claude Code 透過 `gh` 找到 [notebooklm-mcp-cli](https://github.com/jacob-bd/notebooklm-mcp-cli) 這套工具，來讓我在 terminal 用 cli 跟 notebookLM 的 api 溝通
+1. 叫 Claude Code 透過 `gh` 找到 [notebooklm-mcp-cli](https://github.com/jacob-bd/notebooklm-mcp-cli) 這套工具，來讓我在 terminal 用 cli 跟 NotebookLM 的 api 溝通
 2. 接著，我只要直接丟 eli 與 老余 的直撥網址到 terminal，然後 claude Code 就會幫我找到跟 NotebookLM 溝通的工具，把直撥影片丟到 notebookLM
 
 ![img](../../../imgs/Trading/3_eli_nlm.jpg)
 
 然後我就能在 notebookLM 上面問各種問題，快速理解概念後，再回去看直撥影片，讓我對這些概念的理解更透徹
 
-## 情境 2: 自動化偵測最新直撥與同步 notebookLM
+### 情境 2: 自動化偵測最新直播與同步 NotebookLM
+
+> ['/yt-sync'](/Users/nicholas/Desktop/WG-Portfolio/portfolio/ai-collaboration/experience/trading/skills/yt-sync.md)
+
+前面「把大量地直撥影片丟進 NotebookLM」的問題
+- Eli 直播：YouTube 上 81 部
+- 老余直播：YouTube 上 323 部
+
+但每次老師開直撥時，我都要開口跟 AI 說同步哪個老師的直撥，這種事情太瑣碎且重複了，也該要自動化才對
+
+![img](../../../imgs/Trading/4_nlms.jpg)
+
+我一樣透過 `gh` 讓 Claude Code 找到 [yt-dlp](https://github.com/yt-dlp/yt-dlp) 這個工具。它除了能下載 YouTube 影片，還能抓取一個頻道上所有影片的清單。
+
+有了這個工具後，我設計了 `/yt-sync` skill，他依序執行
+1. `yt-dlp` 抓頻道清單、比對差集
+2. `NLM MCP` 的 `source_add` 把新直播加進 NLM
+3. `NLM MCP` 的 `notebook_query` 直接問「新直播跟舊的有什麼不同」→ 產出 markdown file 差異分析報告
+
+如此一來，我之後只要在 Claude Code 下 `/yt-sync`
+
+![img](../../../imgs/Trading/5_yt_sync.jpg)
+
+就能快速知道，這次的直播內容，有什麼我不知道的洞見與觀點。
 
 
+### 情境 3: 快速定位影片的幾分幾秒
 
-## 一句話定位
+> ['/vck'](skills/vck.md) + ['/transcribe'](skills/transcribe.md)
 
-把散落在 YouTube 影片、付費課程、NLM 筆記中的交易知識，用 **24 個 AI 指令（Skills）** 串成一條「學習 → 整理 → 開發 → 驗證」的自動化管線，讓交易策略的開發從「腦中想法」到「TradingView 上跑的指標」有標準流程。
+但是還有個問題，我只是在 NLM 上面討論，我還是需要回頭看老師的影片才能真正吸收
 
----
+但我遇到一個問題：**我要如何定位出直撥影片的幾分幾秒，是我要看的內容**
 
-## 背景與問題
+比如我想複習老余的「破底翻」這個概念，我知道好幾部直播都有講過，但具體是 **哪部影片的幾時幾分幾秒？**
 
-交易學習涉及多位老師（Eli、老余）、數百部影片、多套策略系統。開發 Pine Script 指標時需要反覆查閱學習資料。痛點：
+後來，我想到一個方式，我可以透過 yt-dlp 取得音訊，然後找找看有沒有什麼 open source 可以處理音訊轉字幕，這樣我就能取得 srt 字幕檔來快速定位影片的幾分幾秒，是我需要的資訊了
 
-1. **知識分散** — 影片逐字稿、NLM 筆記、流程圖、概念文件散落各處，查一個概念要翻多處
-2. **影片定位難** — 「哪部影片講過破底翻？在幾分幾秒？」靠記憶不可能
-3. **Pine Script 開發品質不一** — 沒有標準 review 流程，refactor 容易引入 bug
-4. **驗證缺乏標準** — 指標改了之後，怎麼確認視覺結果跟改之前一致？
+於是我又讓 Claude Code 用 `gh` 找到了 [mlx_whisper](https://github.com/ml-explore/mlx-examples)，這是一個在 Apple 晶片上跑的語音轉文字工具，速度很快。搭配前面的 [yt-dlp](https://github.com/yt-dlp/yt-dlp)，我設計了 `/transcribe` 和 `/vck` 兩個 skill，依序執行
 
----
+1. `yt-dlp` 只下載音訊（不下載影片，省空間）
+2. `mlx_whisper` 把音訊轉成帶時間戳記的逐字稿
+3. `/vck` 用關鍵字搜尋所有逐字稿 → 定位到「哪部影片的幾分幾秒在講這個概念」
 
-## 系統架構
+轉完之後，數百部影片就變成了數百份可以搜尋的文字檔。我只要輸入關鍵字，就能找到「哪部直撥影片(網址是什麼)的 32 分 17 秒到 35 分 00 秒在講破底翻」，然後直接跳到那個時間點去看。
 
-```
-AI 輔助交易開發系統
-│
-├─ 1.【知識萃取層】影片 → 結構化知識
-│     └─ 影片下載 → 逐字稿 → NLM 查詢 → 筆記同步 → 流程圖歸類
-│
-├─ 2.【策略研究層】知識 → 可執行策略
-│     └─ 概念文件 → 影片定位 → 截圖分類 → 對錯範例提取
-│
-├─ 3.【指標開發層】策略 → Pine Script
-│     └─ 規劃 → 模板 → 實作 → Review → Refactor → 同步
-│
-└─ 4.【驗證部署層】指標 → TradingView 驗證
-      └─ K 線歸檔 → 繪圖提取 → 數據比對 → Cookie 維護
-```
+## 情境 4: 如何在模擬倉練習交易
 
----
+看了兩位老師的直撥與付費課程的影片後，我需要實際投入練習，在模擬倉練習交易
 
-## 四條工作流程
+在此我以老余的策略，註冊 trialdovate練習期貨為例
+- [如何利用10分鐘信箱註冊Tradovate的免費帳號（別開戶），來利用他們的重播Replay功能練功？](https://www.youtube.com/watch?v=X3wFnVA-SoE)
 
-### 流程 A：知識萃取（影片 → 結構化知識）
+![img](../../../imgs/Trading/6_10minmail.jpg)
 
-```
-/yt-sync → /yt-enrich → /transcribe → /vck → /kvs → /ns
-偵測新直播   下載+SRT     音訊轉逐字稿   影片定位  截圖+概念文件  同步筆記到流程圖
-```
+老余原始的做法，是 google 找 10分鐘信箱來註冊 Tradovate trial account
 
-**產出**：逐字稿（SRT）、影片定位文件、截圖概念文件、NLM 筆記、流程圖更新
+但是，依照我們用 AI 的方式會直覺覺得，這樣太慢了，我根本就不該 google 去找 10 min mail 的服務，也不該去網頁上面操作 10 minute mail 服務，以及在 Tradovate 的頁面手動註冊
 
-### 流程 B：策略研究（查詢 + 定位 + 範例）
+所以我該做到兩件事
+1. 找到 claude code 可以直接用 api 溝通的暫時性的 mail 服務
+2. 找出 Tradovate 背後註冊 trial 的 api 
 
-```
-/nq "概念" → /vck "概念" → /pv {#編號} → /tee → /rwp
-NLM 查詢     影片定位       播放影片      提取對錯範例  審閱交易練習
-```
+然後把他包成 script ，然後包成 skill，之後 skill 就能自動化，我完全不用在這重複的工作動腦
 
-**產出**：NLM 查詢記錄（raw + summary）、影片時間片段、對/錯交易範例
+### 情境 4-0: 找出可以讓 AI 用 API 操作的 mail 服務
 
-### 流程 C：Pine Script 開發（策略 → 指標）
+於是我讓 Claude Code 用 `gh` 搜尋，找到了 [mail.tm](https://mail.tm) — 免費、有 REST API、不需要金鑰，信箱是閒置約 7 天才會被清掉，不是倒數消失。
 
-```
-/pine-manager → /pine-patterns → 實作 → /psbp → /pine-sync → /changelog
-規劃開發        模板             寫code  Review+Refactor  雙層同步    更新版本
-```
+不過這邊有個風險：很多正規服務會封鎖已知的拋棄式信箱網域。Tradovate 會不會擋 mail.tm？這只能實測才知道。
 
-**產出**：Pine Script 指標、Code Review 文件、CHANGELOG
+結果：**沒被擋**，驗證信約 78 秒後送達。第一關過了。
 
-### 流程 D：驗證與數據（指標 → 確認正確）
+我把跟 mail.tm 溝通的邏輯包成了 [`mailtm.sh`](scripts/mailtm.sh)，它可以建信箱、輪詢收件匣、讀出驗證連結，全程純 API，不需要開瀏覽器。
 
-```
-/chart-archive → /ig → /draw-verify → /tv-cookie-refresh
-K線歸檔          拉繪圖數據  報價比對驗證    Cookie 更新
-```
+### 情境 4-1: 如何找出 Tradovate 背後用的 API
 
-**產出**：OHLCV 歸檔、繪圖數據、驗證結果
+> ['/sniff'](scripts/capture.mjs)
 
----
+有了 **mail.tm** 之後，第二個問題是：Tradovate 的註冊頁面，點下「Sign Up」按鈕後，背後到底打了哪個 API？
 
-## 24 個 Skill 分類
+如果我能找到那個 API，就能直接用程式呼叫它，完全不需要開瀏覽器去填表單。
 
-### 知識萃取（10 個）
+但我不想只是這次手動打開 Chrome DevTools 看一看就算了。以後遇到別的網站也會有同樣的需求，所以我想把「逆向分析網頁背後的 API」這件事本身也做成一個可重複使用的工具。
 
-| Skill          | 用途                             | 串接位置    |
-| -------------- | -------------------------------- | ----------- |
-| `/nq`          | 查 NotebookLM，存 raw + summary  | 流程 B 起點 |
-| `/ns`          | 同步 NLM 筆記，自動歸類到流程圖  | 流程 A 末端 |
-| `/vck`         | SRT 搜尋定位影片時間片段         | 流程 A/B    |
-| `/kvs`         | 影片截圖 + llava 分類 + 概念文件 | 流程 A      |
-| `/tee`         | 從 SRT 提取對/錯交易範例         | 流程 B      |
-| `/rwp`         | 審閱交易練習截圖                 | 流程 B      |
-| `/rwp-prepare` | 載入審閱知識（RAG 搜尋規則）     | 流程 B 前置 |
-| `/pv`          | mpv 播放影片（跳轉時間點）       | 流程 B      |
-| `/transcribe`  | 音訊轉 SRT（mlx_whisper）        | 流程 A      |
+於是我讓 Claude Code 用 `gh` 找到了 [puppeteer-core](https://github.com/nicktomlin/nicktomlin/)，它可以用程式開一個獨立的 Chrome 視窗，錄下所有的 network request。我把它包成 [`capture.mjs`](scripts/capture.mjs)，流程很簡單：
 
+1. 開一個獨立的 Chrome 視窗（不會影響我日常在用的瀏覽器）
+2. 我在那個視窗裡操作目標網站（填表單、點按鈕）
+3. 關掉視窗，程式自動把所有錄到的 request 存成 JSON
 
-### YouTube 同步（2 個）
+拿 Tradovate 來實測：操作一次註冊流程，錄下了 112 筆 request，其中 37 個 POST。分析後發現，36 個都是 Google Analytics、Bugsnag 之類的埋點，**真正的業務 API 只有 1 個**。
 
-| Skill        | 用途                                | 串接位置    |
-| ------------ | ----------------------------------- | ----------- |
-| `/yt-sync`   | 偵測新直播 + NLM 差異分析           | 流程 A 起點 |
-| `/yt-enrich` | 下載音訊 + SRT + VCK + KVS + 流程圖 | 流程 A      |
+第二次 sniff 建帳號的頁面，又找到了完成註冊的 API。
 
-### Pine Script 開發（5 個）
+最關鍵的發現：這兩個 API **零 captcha、零 cookie**，意味著可以用最簡單的方式（curl）直接呼叫，完全不需要瀏覽器。
 
-| Skill                | 用途                                   | 串接位置    |
-| -------------------- | -------------------------------------- | ----------- |
-| `/pine-manager`      | 複雜開發規劃                           | 流程 C 起點 |
-| `/pine-patterns`     | Pine Script v6 標準模板                | 流程 C      |
-| `/pine-sync`         | 子指標 / master / strategy 三層同步    | 流程 C      |
-| `/psbp`              | 按社群規範 Review + Refactor（6 階段） | 流程 C      |
-| `/tv-cookie-refresh` | 更新 TradingView session cookie        | 流程 D      |
+### 情境 4-2: 自動化建立 Tradovate trial account 讓我在模擬倉練習交易
 
-### 資料與驗證（3 個）
+> [`tradovate-new.sh`](scripts/tradovate-new.sh) + [`tradovate-signup.sh`](scripts/tradovate-signup.sh)
+> ⚠️ 腳本中的 API 路徑已去識別化，避免在公開平台透露第三方服務的內部 API path
 
-| Skill            | 用途                            | 串接位置    |
-| ---------------- | ------------------------------- | ----------- |
-| `/chart-archive` | 每日增量 OHLCV K 線歸檔（7 TF） | 流程 D 起點 |
-| `/draw-verify`   | 繪圖報價 + OHLCV 比對驗證       | 流程 D      |
-| `/ig`            | 從 TradingView 拉指標繪圖數據   | 流程 D      |
+有了 mail.tm 能讓程式收信，又有了 `/sniff` 找出來的兩個 API，接下來就是把它們串起來。
 
-### 工具（4 個）
+就能讓 Claude Code 把整個流程包成 [`tradovate-new.sh`](scripts/tradovate-new.sh)，它依序執行四步：
 
-| Skill           | 用途                     | 串接位置    |
-| --------------- | ------------------------ | ----------- |
-| `/epl`          | 摘要問題 + 流程圖說明    | 任何流程    |
-| `/rat`          | 搜尋 WG-SOP 研究文件索引 | 任何流程    |
-| `/changelog`    | 更新 WG-SOP CHANGELOG    | 流程 C 末端 |
-| `/toggle-model` | 切換 Claude Code 模型    | 任何時候    |
+1. 用 [`mailtm.sh`](scripts/mailtm.sh) 建一個拋棄式信箱
+2. 呼叫第一個 API，觸發 Tradovate 寄驗證信到這個信箱
+3. 用 `mailtm.sh` 輪詢收件匣，等驗證信進來，抓出裡面的驗證連結
+4. 呼叫第二個 API，帶上驗證連結裡的 token，完成註冊
 
----
+整個過程 10 到 30 秒，全程零瀏覽器。跑完後 stdout 直接印出帳號密碼，同時自動寫入一份台帳（TSV 檔），方便管理哪些帳號還在用、哪些已經過期。
 
-## MCP Server 整合
+以後每次 trial 到期，我只要在 Claude Code 下一個指令，就有新帳號可以繼續練習。
 
-| Server              | 用途                                  | 搭配 Skill            |
-| ------------------- | ------------------------------------- | --------------------- |
-| `notebooklm-mcp`    | NotebookLM 查詢、source 管理          | `/nq`、`/ns`          |
-| `pinescript-server` | Pine Script 驗證、修正、生成          | `/psbp`               |
-| `pinescript-docs`   | Pine Script v6 離線文件 + code review | `/psbp`               |
-| `tradingview-chart` | TradingView 圖表截圖                  | `/draw-verify`、`/ig` |
+## 開發在 TraidingView 運行的 pine script 程式寫交易指標
 
----
+### 情境 1: 如何取得 TradingView 的 K 棒資料
 
-## CLI 工具鏈
+> ['/chart-archive'](skills/chart-archive.md) + [`chart-archive.mjs`](scripts/chart-archive.mjs)
 
-| 工具                   | 用途                          | 搭配 Skill                |
-| ---------------------- | ----------------------------- | ------------------------- |
-| `mpv`                  | 影片播放（時間跳轉）          | `/pv`                     |
-| `yt-dlp`               | YouTube 音訊/片段下載         | `/yt-enrich`、`/dl-video` |
-| `ffmpeg`               | 截圖、音訊轉檔                | `/kvs`、`/transcribe`     |
-| `mlx_whisper`          | 音訊 → SRT（Apple Silicon）   | `/transcribe`             |
-| `ollama` + `gemma2:9b` | 文字 LLM（時間區段分析）      | `/vck`                    |
-| `ollama` + `llava:13b` | 視覺 LLM（截圖分類）          | `/kvs`                    |
-| `rtk`                  | Bash 輸出壓縮（省 80% token） | 所有 Bash 操作            |
+我要開發的交易指標是用 Pine Script 寫的，它跑在 TradingView 這個網頁平台的沙盒裡。Claude Code 完全看不到 TradingView 上面的 K 線圖，也摸不到裡面的資料。
 
----
+這代表一件事：我改了指標邏輯之後，沒辦法用程式驗證結果對不對，只能用眼睛看圖表。這在複雜的指標開發中很容易漏掉問題。
 
-## 設計方法論
+所以第一步，我需要把 K 線資料從 TradingView 拉出來，讓 Claude Code 也能看到同樣的數據。
 
-1. **全鏈路覆蓋** — 從「看影片學」到「寫出指標跑在 TradingView」，每個環節都有對應 skill，不靠人記流程。
-2. **單一職責 + 可組合** — 每個 skill 做一件事，靠串接組出不同流程。`/vck` 單獨用也行，接在 `/yt-enrich` 後面也行。
-3. **多工具協作** — 一個 skill 可能調用 NLM MCP + ollama + ffmpeg + git，Claude Code 當中控，統一指揮。
-4. **漸進式知識累積** — 每次 `/yt-sync` 偵測新影片 → `/yt-enrich` 豐富知識 → `/ns` 歸類到流程圖，知識體系自動生長。
-5. **開發驗證閉環** — `/psbp` Review → Refactor → 本地 JS 驗證 → TradingView 視覺確認 → commit，每步都有檢查點。
+但 TradingView 沒有公開的 K 線資料 API。不過我想，瀏覽器打開 TradingView 時，背後一定有在打某個 API 取資料。如果我能找到那個 API，程式就能撈同樣的東西。
 
----
+於是我讓 Claude Code 用 `gh` 搜尋，找到了 [TradingView-API](https://github.com/Mathieu2301/TradingView-API) 這個 open source，它可以透過 WebSocket 拉 K 線的 OHLCV 資料（開盤、最高、最低、收盤、成交量）。
 
-## 成果
+不過這邊遇到兩個問題：
 
-- 5 位老師的影片知識結構化：Eli（77+ 部直播 + 本地課程）、老余、Riley、Sky 等
-- 93 則 NLM 筆記自動歸類到 16 個流程圖節點 + 7 個模組
-- 3,500+ 個影片時間片段定位（16 個主題）
-- 16 份圖文概念文件（含實盤驗證截圖）
-- WG-SOP Pine Script 指標（盤整框 + 亞當目標 + S/R，MTF 版 1,400+ 行）
-- 每日增量 K 線歸檔（7 個時間週期，多商品）
+第一個，TradingView 需要登入才能取資料。我又讓 Claude Code 用 `gh` 找到了 [rookiepy](https://github.com/borisbabic/browser_cookie3)，它可以從 Chrome 解密出 TradingView 的登入 cookie。我把它包成一套共用的快取機制 — cookie 存在一個 JSON 檔裡，7 天過期後自動更新，所有工具共用同一份。
 
----
+第二個，TradingView 的短週期 K 線只保留有限天數（1 分鐘的大約只有 30 天）。如果不定期撈，過了就沒了。所以我設計了增量歸檔的機制：記錄每個時間週期最後一根 K 線的時間，下次只撈那之後的新資料，不重撈舊的。
 
-## 履歷 Bullet
+最後包成了 `/chart-archive` skill 和 [`chart-archive.mjs`](scripts/chart-archive.mjs)，支援 7 個時間週期（從 1 分鐘到週線），每天跑一次就能把最新的 K 線歸檔到本地。
 
-- 設計 24 個可組合的 AI 指令，串成「知識萃取 → 策略研究 → 指標開發 → 驗證」四條自動化工作流
-- 整合 4 個 MCP Server + 6 個 CLI 工具，讓 Claude Code 統一調度影片處理、NLM 查詢、Pine Script 驗證、圖表截圖
-- 將 5 位老師的數百部影片結構化為可查詢的知識體系（3,500+ 時間片段、93 則筆記、16 份概念文件）
-- 體現能力：AI 工程、流程自動化、多工具整合、領域知識工程化
+### 情境 2: 如何讓 Claude Code 理解我在 TradingView 上面畫的圖
+
+### 情境 3: 如何從零實作出 eli 的首Ｋ策略的指標，與破框策略的指標
+
+### 情境 4:
