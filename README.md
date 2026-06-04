@@ -6,8 +6,10 @@
 - [老余的金融筆記](https://www.youtube.com/@KevinYuFutures)
 - [Eli 伊萊](https://www.youtube.com/@Eli.ai.trades)
 
-從我完全陌生，然後用 AI 去學習這些不熟悉的領域的過程
-最後我甚至用 AI 在看盤軟體 TradingView 寫 pine script 語法，完全從零重現 eli 老師的交易指標
+從我完全陌生，然後用 AI 去學習這些不熟悉的領域的過程。
+
+最後我甚至用 AI 在看盤軟體 TradingView 寫 pine script 語法，完全從零重現 eli 老師的交易指標。
+
 這邊不會透露 pine script 的程式碼，但會說明我在學習與實作時的思路
 
 ---
