@@ -1,0 +1,8 @@
+# 過渡期討論、求職準備資料 — 只留本機，不上 GitHub
+workspace/
+
+# 系統 / 編輯器
+.DS_Store
+*.swp
+.vscode/
+.idea/
