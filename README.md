@@ -53,7 +53,7 @@
 
 ### 情境 2: 自動化偵測最新直播與同步 NotebookLM
 
-> ['/yt-sync'](portfolio/ai-collaboration/experience/trading/skills/yt-sync.md)
+> [`/yt-sync`](portfolio/ai-collaboration/experience/trading/skills/yt-sync.md)
 
 前面「把大量地直撥影片丟進 NotebookLM」的問題
 - Eli 直播：YouTube 上 81 部
@@ -128,7 +128,7 @@
 
 ### 情境 2: 如何找出 Tradovate 背後用的 API
 
-> ['/sniff'](portfolio/ai-collaboration/experience/trading/scripts/capture.mjs)
+> [`/sniff`](portfolio/ai-collaboration/experience/trading/scripts/capture.mjs)
 
 有了 **mail.tm** 之後，第二個問題是：Tradovate 的註冊頁面，點下「Sign Up」按鈕後，背後到底打了哪個 API？
 
@@ -170,7 +170,7 @@
 
 ### 情境 1: 如何取得 TradingView 的 K 棒資料
 
-> ['/chart-archive'](portfolio/ai-collaboration/experience/trading/skills/chart-archive.md) + [`chart-archive.mjs`](portfolio/ai-collaboration/experience/trading/scripts/chart-archive.mjs)
+> [`/chart-archive`](portfolio/ai-collaboration/experience/trading/skills/chart-archive.md) + [`chart-archive.mjs`](portfolio/ai-collaboration/experience/trading/scripts/chart-archive.mjs)
 
 我要開發的交易指標是用 Pine Script 寫的，它跑在 TradingView 這個網頁平台的沙盒裡。Claude Code 完全看不到 TradingView 上面的 K 線圖，也摸不到裡面的資料。
 
