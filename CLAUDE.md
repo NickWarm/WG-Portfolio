@@ -6,11 +6,10 @@
 
 | 路徑 | 內容 |
 | ---- | ---- |
-| `portfolio/resume/` | 履歷（泛用版 / 客製版 / 素材庫） |
 | `portfolio/imgs/` | 文件用圖片（**已版控**，可壓縮覆寫，需要時 `git checkout` 還原） |
 | `portfolio/ai-collaboration/experience/` | 實戰案例（eagle、trading）——**展示素材**，多由其他專案搬來，非本 repo 運作的系統 |
 | `portfolio/ai-collaboration/skills/` | **本 repo 實際在用的 skill**（見下） |
-| `workspace/` | 過渡討論、求職準備、**proposals（針對目標公司的概念設計，未驗證）**——僅本機，已 `.gitignore` |
+| `workspace/` | 過渡討論、求職準備、**resume（履歷）**、**proposals（針對目標公司的概念設計，未驗證）**——僅本機，已 `.gitignore` |
 
 > ⚠️ `experience/` 底下的 `*_skill_proposal.md`、design-docs 是**作品集內容**，
 > 用來呈現我駕馭 Claude Code 的思路，**不是**本 repo 安裝啟用的 skill。
