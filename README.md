@@ -1,5 +1,13 @@
 # Experience
 
+這邊會分享我開始用 AI 學習與寫程式的經歷
+1. **Trading**: 我個人學習交易的專案
+2. **Eagle**：把 [飛鷹地產](https://www.eagle111.com/) 的後端，從 [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet) (C# 的框架) + MSSQL 改成 NestJS (TypeScript 的框架) + PostgreSQL
+
+會先從 Trading 開始，因為他是完全陌生的領域，會展示我如何透過 AI 學習這個完全陌生的領域
+
+以及我的各種重複性工作的需求，我如何用 AI 把他自動化，節省我的時間，讓我的專注力放在重要需要思考與決策的地方
+
 ## Trading
 
 這是我在學習交易的兩個老師
@@ -15,11 +23,11 @@
 這邊會依序分享三個主題
 1. 透過 AI 縮減學習需要的時間
 2. 如何自動化註冊練習交易用的模擬倉
-3. 開發在 TraidingView 運行的 pine script 程式寫交易指標
+3. 開發 TraidingView 的交易指標
 
 ---
 
-## 透過 AI 縮減學習需要的時間
+## 如何用 AI 加速學習效率
 
 首先，我會闡述我如何思考與使用 AI 輔助我學習，以及我如何把這些流程自動化
 
@@ -32,7 +40,7 @@
 ![img](portfolio/imgs/Trading/1_live_stream.jpg)
 
 
-### 情境 1: 如何用已有的 AI 與各種 open source 加速學習不熟悉的領域
+### 情境 1: 用已有的 AI 服務與各種 open source 加速學習不熟悉的領域
 
 在 AI 時代，軟體開發會用終端機 (terminal) 跟 Claude Code 協作。
 
@@ -172,7 +180,11 @@
 
 以後每次 trial 到期，我只要在 Claude Code 下一個指令，就有新帳號可以繼續練習。
 
-## 開發在 TraidingView 運行的 pine script 程式寫交易指標
+## 開發 TraidingView 的交易指標
+
+TradingView 上面看到的指標，都是用 TradingView 開發的 pine script 語法運作的，只能在 TradingView 上面執行，不像傳統的程式語言能在我們本地的電腦執行與運作
+
+傳統遇到問題，我
 
 ### 情境 1: 如何取得 TradingView 的 K 棒資料
 
