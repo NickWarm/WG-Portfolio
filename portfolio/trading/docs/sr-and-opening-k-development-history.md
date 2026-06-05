@@ -8,7 +8,13 @@ Eli 老師有兩個官方看不到程式碼，用授權的 TradingView 指標
 
 我們透過截圖觀察、設定面板逆向、Bar Replay 回放比對、NLM 課程逐字稿查詢等方式研究其行為，再用自己的方式在 WG-SOP MTF 中重現。
 
+Eli 老師的兩個指標
 
+![img](../../../imgs/Trading/10_Eli_identifier.jpg)
+
+我自己開發合而為一的指標
+
+![img](../../../imgs/Trading/11_WG_identifier.jpg)
 
 本文聚焦在 WG-SOP MTF 中 S/R 撐壓線和開盤首K 的**實作開發歷程**。
 
