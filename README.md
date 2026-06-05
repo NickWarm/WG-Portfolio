@@ -16,7 +16,7 @@
 
 從我完全陌生，然後用 AI 去學習這些不熟悉的領域的過程。
 
-最後我甚至用 AI 在看盤軟體 TradingView 寫 pine script 語法，完全從零重現 eli 老師的交易指標。
+最後我甚至用 AI 在看盤軟體 TradingView 寫 pine script 語法，完全從零重現 Eli 老師的交易指標。
 
 這邊不會透露 pine script 的程式碼，但會說明我在學習與實作時的思路。
 
@@ -58,9 +58,9 @@
 
 所以我會安裝 [Github CLI](https://cli.github.com/) (簡稱 `gh`) 然後，我就可以在 terminal 
 1. 叫 Claude Code 透過 `gh` 找到 [notebooklm-mcp-cli](https://github.com/jacob-bd/notebooklm-mcp-cli) 這套工具，來讓我在 terminal 用 cli 跟 NotebookLM 的 api 溝通
-2. 接著，我只要直接丟 eli 與 老余 的直撥網址到 terminal，然後 claude Code 就會幫我找到跟 NotebookLM 溝通的工具，把直撥影片丟到 notebookLM
+2. 接著，我只要直接丟 Eli 與 老余 的直撥網址到 terminal，然後 claude Code 就會幫我找到跟 NotebookLM 溝通的工具，把直撥影片丟到 notebookLM
 
-![img](imgs/Trading/3_eli_nlm.jpg)
+![img](imgs/Trading/3_Eli_nlm.jpg)
 
 然後我就能在 notebookLM 上面問各種問題，快速理解概念後，再回去看直撥影片，讓我對這些概念的理解更透徹
 
@@ -182,17 +182,39 @@
 
 ## 開發 TraidingView 的交易指標
 
-TradingView 上面看到的指標，都是用 TradingView 開發的 pine script 語法運作的，只能在 TradingView 上面執行，不像傳統的程式語言能在我們本地的電腦執行與運作
+[TradingView](https://tw.tradingview.com/) 上面看到的指標，都是用 TradingView 開發的 [Pine Script](https://tw.tradingview.com/pine-script-reference/v5/) 語法運作的。
 
-傳統遇到問題，我
+Pine Script 只能在 TradingView 上面執行，不像傳統的程式語言能在我們本地的電腦運作與 debug。
+
+![img](imgs/Trading/9_PineScript.jpg)
+
+[Eli 伊萊](https://www.youtube.com/@Eli.ai.trades) 有兩個官方非公開的指標
+- [破框策略指標](https://www.youtube.com/watch?v=UPiurxFL-qc)
+- [首Ｋ策略指標](https://youtu.be/4oAKOBbKmBk?si=h0J1MWC1Vpc5QKxe)
+
+這兩個指標，需要在指定外匯交易平台入金，並且每週都要交易才有權限使用
+
+我入金使用後，想到一件事情，我既然都上過課，也都會這些交易策略，那我應該能重現 Eli 的指標才對
+
+接下來會說明我在寫 pine script 時遇到的問題，我是如何思考與解決這些問題，最終成功逆向工程自己寫出 Eli 的兩個指標運行的程式碼，融合成一個指標
+
+這邊不會公開我的版本的 pine script，為了尊重 Eli 老師，但是後面會整理成獨立一篇文章放在 Github，說明我在開發時遇到的各種技術挑戰，以及我是怎麼解決的
 
 ### 情境 1: 如何取得 TradingView 的 K棒資料
 
 > [`/chart-archive`](portfolio/trading/skills/chart-archive.md) + [`chart-archive.mjs`](portfolio/trading/scripts/chart-archive.mjs)
 
-我要開發的交易指標是用 Pine Script 寫的，它跑在 TradingView 這個網頁平台的沙盒裡。Claude Code 完全看不到 TradingView 上面的K棒圖，也摸不到裡面的資料。
+Trading View 的 Pine Script 只能跑在 TradingView 的 sandbox 裡。
 
-這代表一件事：我改了指標邏輯之後，沒辦法用程式驗證結果對不對，只能用眼睛看圖表。這在複雜的指標開發中很容易漏掉問題。
+這會有兩個問題
+1. 我本地完全沒有 TradingView 的 K 棒資料，我完全無法本地驗證
+2. pine scirpt 無法在本地執行，我只能在 TradingView 上面執行驗證與 debug
+
+我曾經實驗用截圖的方式，讓 Claude Code 的 Ops model (那時應該還在 Ops 4.4 or 4.5 左右)，但是完全失敗，AI 對 K 棒線圖的理解能力還無法投入使用
+
+後來，我想到一個點子：把 K 棒的線圖，看成是一個地圖不就好了嗎，我只要把地圖資料抓下來，不就能夠在我本地驗證與判斷我的 pine script 程式邏輯，是否符合我的預期嗎。
+
+這樣 AI 有了這些資料，不就是給 AI 套上「視覺」的能力，讓他理解我所希望他理解的資訊嗎。
 
 所以第一步，我需要把K棒資料從 TradingView 拉出來，讓 Claude Code 也能看到同樣的數據。
 
@@ -216,29 +238,37 @@ TradingView 上面看到的指標，都是用 TradingView 開發的 pine script 
 
 K棒資料有了，但接下來的問題是：我的開發流程是「先在 TradingView 上手動畫圖做標記，再用程式去驗證邏輯」。比如我會在圖表上畫兩條線標出盤整區間、標出突破點、畫出亞當目標價。但 Claude Code 看不到我的畫面，它不知道我畫了什麼、畫在哪個價格。
 
-我需要解決兩件事：第一，確認程式拉到的繪圖資料跟畫面上一致；第二，讓程式能讀懂指標自動畫出來的東西。
+我需要解決兩件事：
+1. 驗證手動畫的圖：確認程式拉到的繪圖資料跟畫面上一致
+2. 讓 Claude Code 能讀懂指標自動畫出來的圖
 
-#### **先講第一件事 — 驗證手動畫的圖。**
+![img](imgs/Trading/8_verify_drawing.jpg)
 
-前面情境 1 用 `gh` 找到的 [TradingView-API](https://github.com/Mathieu2301/TradingView-API)，除了能拉 K棒資料，我後來發現它還有 HTTP API 可以拉到我在 TradingView 上手動畫的所有繪圖的座標和報價。
 
-這很關鍵，因為如果程式拉到的報價跟 TradingView 畫面上看到的不一樣，那後面所有的 Pine Script 開發都建立在錯誤的資料上。所以我先做了一個驗證工具：程式同時拉繪圖報價和 K棒數據，輸出到終端機，我再對照 TradingView 畫面確認兩邊一致。確認可信之後，才敢往下做。
+#### **驗證手動畫的圖**
 
-這就是 [`/draw-verify`](portfolio/ai-collaboration/experience/trading/skills/draw-verify.md) 這個 skill 在做的事。
+前面用 `gh` 找到的 [TradingView-API](https://github.com/Mathieu2301/TradingView-API)，除了能把K棒資料拉到我本地的電腦之外，發現它還有 HTTP API 可以拉到我在 TradingView 上手動畫的所有繪圖的座標和報價。
 
-#### **第二件事比較有趣 — 讓程式讀懂指標自動畫出來的圖。**
+這很關鍵，因為如果程式拉到的報價跟 TradingView 畫面上看到的不一樣，那後面所有的 Pine Script 開發都建立在錯誤的資料上。
 
-我寫的 Pine Script 指標會自動在圖表上畫出盤整框、突破標記、亞當目標線這些東西。同一個 [TradingView-API](https://github.com/Mathieu2301/TradingView-API) 也能讀取指標畫出來的 graphic 物件（box、label、line）— 這本來我以為做不到，後來翻它的範例才發現原來支援。
+所以我先做了一個驗證工具 [`/draw-verify`](portfolio/ai-collaboration/experience/trading/skills/draw-verify.md) skill 
 
-但問題是，讀出來的只有座標數字，程式不知道「這個框是盤整框」還是「那個標記是突破訊號」。
+讓 AI 可以用程式同時拉繪圖報價和 K棒數據，輸出到 terminal，我再對照 TradingView 畫面確認兩邊一致。確認資料一致，我做出來的符合我所看到的，才能繼續往下開發
 
-我的解法是在 Pine Script 裡面埋「隱藏標記」：把 box 裡的文字設成完全透明（肉眼看不到），但文字內容寫的是類型標記，像 `CONS_15m` 代表 15 分鐘的盤整框；label 的 tooltip 寫 `BREAKOUT_15m_UP` 代表 15 分鐘的向上突破。TradingView 畫面上完全看不到這些標記，但程式透過 API 讀得到。
 
-這樣 Claude Code 就能知道：這個框是盤整框、那條線是亞當目標、這個標記是突破訊號。不同指標之間原本因為 Pine Script 的沙盒限制完全無法互相傳資料，透過這套隱藏標記的機制，等於繞過了這個限制。
+#### **讓 Claude Code 能讀懂指標自動畫出來的圖**
+
+手動畫的圖能驗證了，但我寫的 Pine Script 指標也會自動在圖表上畫各種圖形 — 框、標籤、線條，每種代表不同的交易訊號。同一個 [TradingView-API](https://github.com/Mathieu2301/TradingView-API) 也能讀取指標畫出來的 graphic 物件（box、label、line）— 這本來我以為做不到，後來翻它的範例才發現原來支援。
+
+但問題是，讀出來的只有座標數字。一個 box 可能代表某種區間，也可能代表某個時段，程式光看座標分不出來。
+
+我的解法是在 Pine Script 裡面埋「隱藏標記」：把 box 裡的文字設成完全透明（肉眼看不到），但文字內容寫的是類型代號；label 的 tooltip 也放類型代號。TradingView 畫面上完全看不到這些標記，但程式透過 API 讀得到。
+
+這樣 Claude Code 就能辨識每個繪圖物件代表什麼意思。而且 Pine Script 的指標之間原本因為沙盒限制完全無法互相傳資料，透過這套隱藏標記的機制，等於繞過了這個限制 — 不同指標各自把資訊編碼在繪圖裡，外部程式統一讀取後就能交叉比對。
 
 這就是 [`/ig`](portfolio/ai-collaboration/experience/trading/skills/ig.md) 這個 skill 在做的事。
 
-### 情境 3: 如何從零實作出 eli 的首Ｋ策略的指標，與破框策略的指標
+### 情境 3: 如何從零實作出 Eli 的首Ｋ策略的指標，與破框策略的指標
 
 
 
