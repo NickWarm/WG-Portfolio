@@ -272,12 +272,59 @@ K棒資料有了，但接下來的問題是：我的開發流程是「先在 Tra
 
 這就是 [`/ig`](portfolio/trading/skills/ig.md) 這個 skill 在做的事。
 
-### 情境 3：如何開發出符合 Pine Scirpt 社群風格且效能好的程式碼
+### 情境 3: 如何開發出符合 Pine Script 社群風格且效能好的程式碼
 
+> [`/psbp`](portfolio/ai-collaboration/experience/trading/skills/psbp.md): 按社群規範做 code review + 分階段重構，每階段都要在 TradingView 確認視覺一致才 commit
 
-### 情境 4: 如何從零實作出 Eli 的首Ｋ策略的指標，與破框策略的指標
+Pine Script 的開發很不容易，不像現在軟體開發班便利
+1. 沒有自動格式化工具
+2. 沒有靜態分析
+3. 沒有測試框架
+4. 程式碼只要不報錯就能跑，但品質完全靠自己把關。
 
+所以，我們要先找出好的 pine script 設計模式與規範，這樣才能寫出符合 pine script 社群的程式碼，也能讓 AI 開發與讀程式碼時快速理解。
 
+於是 Claude Code 用 `gh` 搜尋 TradingView 社群裡公認寫得好的開源指標，找到 [WTT_Bias](https://github.com/williamskrzypczak/WTT_Bias) 和 [Dskyz DAFE](https://github.com/ainell-owi/Dskyz-DAFE-open-source-collection-) 這兩位作者的作品。
+
+他們的程式碼有幾個共同特點：
+- 邏輯區塊用 SECTION 清楚分離
+- 用自定義型別（UDT）把相關變數封裝在一起
+- 不重複寫一樣的東西（DRY 原則）
+- 命名一致好讀
+
+我把這些規範整理成一份文件（[`pinescript-design-patterns.md`](portfolio/ai-collaboration/experience/trading/docs/pinescript-design-patterns.md)），然後設計了 [`/psbp`](portfolio/ai-collaboration/experience/trading/skills/psbp.md) 這個 skill，讓 Claude Code 可以按這套規範幫我做 code review 和重構。
+
+重構不是一次改完。`/psbp` 會把改動拆成好幾個階段，每個階段獨立、可驗證。每改完一個階段，我都要把程式碼貼到 TradingView 上確認畫面跟改之前完全一樣，確認沒改壞，才能繼續下一階段。
+
+另外，重構前後我還會用 JavaScript 寫模擬腳本（[`sim-sr-refactor.mjs`](portfolio/ai-collaboration/experience/trading/scripts/sim-sr-refactor.mjs)），用假資料跑一遍重構前和重構後的邏輯，確認輸出完全一致。視覺驗證 + 邏輯驗證，兩道保險。
+
+舉個實際的例子：我的支撐壓力線功能，第一版有 48 個散落的變數、合併邏輯重複寫了 6 次、繪圖程式碼也重複 6 次。如果要加一個新的時間週期，得改 20 幾個地方。
+
+經過 `/psbp` 五個階段的重構，行數從 1159 降到 1054（少了 9%），加新時間週期只需要改 2 個地方。
+
+### 情境 4: 完整開發流程 — 從零重現 Eli 老師的指標
+
+把前面所有 skills 工具串起來，就是我開發 Pine Script 指標的完整流程：
+
+> 用 `gh` 找到社群的參考程式碼 → 研究 Eli 官方指標的行為 → 保留通用寫法，改成 Eli 的規則 → 實作 → `/draw-verify` 驗證資料 → `/ig` 讀取指標繪圖 → `/psbp` code review + 重構 → 發現問題 
+
+每個功能都是這個循環跑好幾輪，不是一次就寫對的。
+
+以 Eli 老師的破框策略的支撐壓力線為例
+
+Claude Code 先用 `gh` 找到 [mitchell-917](https://github.com/mitchell-917/tradingview-pinescript-lab) 的開源程式碼當起點，裡面有偵測價格轉折點和畫水平線的通用寫法。
+
+接著研究 Eli 官方指標的行為 (它是用授權開通指標的方式，看不到 pine script 的程式碼)
+
+所以我用畫圖，然後讓 Claude code 用 /draw-verify 取得我畫的圖，是哪些資料，跟 AI 討論說明
+
+用 [TradingView 的 replay](https://tw.tradingview.com/support/solutions/43000474024/) 一根 K 棒一根 K 棒地觀察
+
+寫完第一版能跑之後，用 `/psbp` 做 code review，發現程式碼很亂（情境 3 提到的 48 個散落變數），就開始分階段重構。
+
+後來實際使用又發現同時看多個時間週期時記憶體不夠，又重新設計計算方式解決。再後來又遇到跨時區的 bug、畫面圖層順序問題 ...etc。
+
+完整的開發歷程（包含每個版本遇到什麼問題、怎麼解決、踩了什麼坑）寫在這篇：[WG-SOP MTF — 支撐壓力線 & 開盤首K 開發歷程](portfolio/trading/docs/sr-and-opening-k-development-history.md)
 
 ---
 
