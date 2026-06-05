@@ -7,6 +7,6 @@ workspace/
 .vscode/
 .idea/
 
-# Claude Code 機器特定配置 — skill 真檔放在 portfolio/ai-collaboration/skills/，
-# 靠 symlink 掛到 ~/.claude；repo 內不放任何 .claude 配置
+# Claude Code 機器特定配置 — repo 內不放任何 .claude 配置
+# （本 repo 自用 skill 真檔放在 workspace/skills/，靠 symlink 掛到 ~/.claude）
 .claude/
