@@ -10,7 +10,8 @@
 
 這會跟我有興趣的跨傳統後端領域之外的軟體開發經驗有關。
 
-Eagle 會是傳統後端工程師的工作範疇，非常的 Claude Code skill 開發技術導向，就會獨立一篇文章，請見 []()。
+Eagle 會是傳統後端工程師的工作範疇，非常的 Claude Code skill 開發技術導向，會獨立另一篇文章
+- [「飛鷹地產」後端開發的 Claude Code skill workflow](portfolio/eagle/skill-workflows.md)
 
 ## Trading
 
