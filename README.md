@@ -60,7 +60,7 @@
 1. 叫 Claude Code 透過 `gh` 找到 [notebooklm-mcp-cli](https://github.com/jacob-bd/notebooklm-mcp-cli) 這套工具，來讓我在 terminal 用 cli 跟 NotebookLM 的 api 溝通
 2. 接著，我只要直接丟 Eli 與 老余 的直撥網址到 terminal，然後 claude Code 就會幫我找到跟 NotebookLM 溝通的工具，把直撥影片丟到 notebookLM
 
-![img](imgs/Trading/3_Eli_nlm.jpg)
+![img](imgs/Trading/3_Elii_nlm.jpg)
 
 然後我就能在 notebookLM 上面問各種問題，快速理解概念後，再回去看直撥影片，讓我對這些概念的理解更透徹
 
