@@ -324,7 +324,8 @@ Claude Code 先用 `gh` 找到 [mitchell-917](https://github.com/mitchell-917/tr
 
 後來實際使用又發現同時看多個時間週期時記憶體不夠，又重新設計計算方式解決。再後來又遇到跨時區的 bug、畫面圖層順序問題 ...etc。
 
-完整的開發歷程（包含每個版本遇到什麼問題、怎麼解決、踩了什麼坑）寫在這篇：[WG-SOP MTF — 支撐壓力線 & 開盤首K 開發歷程](portfolio/trading/docs/sr-and-opening-k-development-history.md)
+完整的開發歷程 （包含每個版本遇到什麼問題、怎麼解決、踩了什麼坑）
+- [WG-SOP MTF — 支撐壓力線 & 開盤首K 開發歷程](portfolio/trading/docs/sr-and-opening-k-development-history.md)
 
 ---
 
