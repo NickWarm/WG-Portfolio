@@ -37,14 +37,14 @@
 
 但我這邊遇到的第一個痛點：影片非常的多，我不想一個一個網址複製，然後去 NLM 貼上，這件事應該要自動化才對
 
-![img](portfolio/imgs/Trading/1_live_stream.jpg)
+![img](imgs/Trading/1_live_stream.jpg)
 
 
 ### 情境 1: 用已有的 AI 服務與各種 open source 加速學習不熟悉的領域
 
 在 AI 時代，軟體開發會用終端機 (terminal) 跟 Claude Code 協作。
 
-![img](portfolio/imgs/Trading/0_terminal.jpg)
+![img](imgs/Trading/0_terminal.jpg)
 
 軟體工程師在開發程式時，都會 [GitHub](https://github.com/) 的 open source，像我最熟悉的程式語言 [Ruby](https://github.com/ruby/ruby)，與 [Ruby On Rails](https://github.com/rails/rails) 框架，都是可以看得到程式碼的 open source。 
 
@@ -60,13 +60,13 @@
 1. 叫 Claude Code 透過 `gh` 找到 [notebooklm-mcp-cli](https://github.com/jacob-bd/notebooklm-mcp-cli) 這套工具，來讓我在 terminal 用 cli 跟 NotebookLM 的 api 溝通
 2. 接著，我只要直接丟 eli 與 老余 的直撥網址到 terminal，然後 claude Code 就會幫我找到跟 NotebookLM 溝通的工具，把直撥影片丟到 notebookLM
 
-![img](portfolio/imgs/Trading/3_eli_nlm.jpg)
+![img](imgs/Trading/3_eli_nlm.jpg)
 
 然後我就能在 notebookLM 上面問各種問題，快速理解概念後，再回去看直撥影片，讓我對這些概念的理解更透徹
 
 ### 情境 2: 自動化偵測最新直播與同步 NotebookLM
 
-> [`/yt-sync`](portfolio/ai-collaboration/experience/trading/skills/yt-sync.md)
+> [`/yt-sync`](portfolio/trading/skills/yt-sync.md)
 
 前面「把大量地直撥影片丟進 NotebookLM」的問題
 - Eli 直播：YouTube 上 81 部
@@ -74,7 +74,7 @@
 
 但每次老師開直撥時，我都要開口跟 AI 說同步哪個老師的直撥，這種事情太瑣碎且重複了，也該要自動化才對
 
-![img](portfolio/imgs/Trading/4_nlms.jpg)
+![img](imgs/Trading/4_nlms.jpg)
 
 我一樣透過 `gh` 讓 Claude Code 找到 [yt-dlp](https://github.com/yt-dlp/yt-dlp) 這個工具。它除了能下載 YouTube 影片，還能抓取一個頻道上所有影片的清單。
 
@@ -85,14 +85,14 @@
 
 如此一來，我之後只要在 Claude Code 下 `/yt-sync`
 
-![img](portfolio/imgs/Trading/5_yt_sync.jpg)
+![img](imgs/Trading/5_yt_sync.jpg)
 
 就能快速知道，這次的直播內容，有什麼我不知道的洞見與觀點。
 
 
 ### 情境 3: 快速定位影片的幾分幾秒
 
-> [`/vck`](portfolio/ai-collaboration/experience/trading/skills/vck.md) + [`/transcribe`](portfolio/ai-collaboration/experience/trading/skills/transcribe.md)
+> [`/vck`](portfolio/trading/skills/vck.md) + [`/transcribe`](portfolio/trading/skills/transcribe.md)
 
 但是還有個問題，我只是在 NLM 上面討論，我還是需要回頭看老師的影片才能真正吸收
 
@@ -117,7 +117,7 @@
 在此我以老余的策略，註冊 trialdovate練習期貨為例
 - [如何利用10分鐘信箱註冊Tradovate的免費帳號（別開戶），來利用他們的重播Replay功能練功？](https://www.youtube.com/watch?v=X3wFnVA-SoE)
 
-![img](portfolio/imgs/Trading/6_10minmail.jpg)
+![img](imgs/Trading/6_10minmail.jpg)
 
 老余原始的做法，是 google 找 10分鐘信箱來註冊 Tradovate trial account
 
@@ -137,11 +137,11 @@
 
 結果：**沒被擋**，驗證信約 78 秒後送達。第一關過了。
 
-我把跟 mail.tm 溝通的邏輯包成了 [`mailtm.sh`](portfolio/ai-collaboration/experience/trading/scripts/mailtm.sh)，它可以建信箱、輪詢收件匣、讀出驗證連結，全程純 API，不需要開瀏覽器。
+我把跟 mail.tm 溝通的邏輯包成了 [`mailtm.sh`](portfolio/trading/scripts/mailtm.sh)，它可以建信箱、輪詢收件匣、讀出驗證連結，全程純 API，不需要開瀏覽器。
 
 ### 情境 2: 如何找出 Tradovate 背後用的 API
 
-> [`/sniff`](portfolio/ai-collaboration/experience/trading/scripts/capture.mjs)
+> [`/sniff`](portfolio/trading/scripts/capture.mjs)
 
 有了 **mail.tm** 之後，第二個問題是：Tradovate 的註冊頁面，點下「Sign Up」按鈕後，背後到底打了哪個 API？
 
@@ -149,7 +149,7 @@
 
 但我不想只是這次手動打開 Chrome DevTools 看一看就算了。以後遇到別的網站也會有同樣的需求，所以我想把「逆向分析網頁背後的 API」這件事本身也做成一個可重複使用的工具。
 
-於是我讓 Claude Code 用 `gh` 找到了 [puppeteer-core](https://github.com/nicktomlin/nicktomlin/)，它可以用程式開一個獨立的 Chrome 視窗，錄下所有的 network request。我把它包成 [`capture.mjs`](portfolio/ai-collaboration/experience/trading/scripts/capture.mjs)，流程很簡單：
+於是我讓 Claude Code 用 `gh` 找到了 [puppeteer-core](https://github.com/nicktomlin/nicktomlin/)，它可以用程式開一個獨立的 Chrome 視窗，錄下所有的 network request。我把它包成 [`capture.mjs`](portfolio/trading/scripts/capture.mjs)，流程很簡單：
 
 1. 開一個獨立的 Chrome 視窗（不會影響我日常在用的瀏覽器）
 2. 我在那個視窗裡操作目標網站（填表單、點按鈕）
@@ -163,15 +163,15 @@
 
 ### 情境 3: 自動化建立 Tradovate trial account 讓我在模擬倉練習交易
 
-> [`tradovate-new.sh`](portfolio/ai-collaboration/experience/trading/scripts/tradovate-new.sh) + [`tradovate-signup.sh`](portfolio/ai-collaboration/experience/trading/scripts/tradovate-signup.sh)
+> [`tradovate-new.sh`](portfolio/trading/scripts/tradovate-new.sh) + [`tradovate-signup.sh`](portfolio/trading/scripts/tradovate-signup.sh)
 >
 > ⚠️ 腳本中的 API 路徑已去識別化，避免在公開平台透露第三方服務的內部 API path
 
 有了 mail.tm 能讓程式收信，又有了 `/sniff` 找出來的兩個 API，接下來就是把它們串起來。
 
-就能讓 Claude Code 把整個流程包成 [`tradovate-new.sh`](portfolio/ai-collaboration/experience/trading/scripts/tradovate-new.sh)，它依序執行四步：
+就能讓 Claude Code 把整個流程包成 [`tradovate-new.sh`](portfolio/trading/scripts/tradovate-new.sh)，它依序執行四步：
 
-1. 用 [`mailtm.sh`](portfolio/ai-collaboration/experience/trading/scripts/mailtm.sh) 建一個拋棄式信箱
+1. 用 [`mailtm.sh`](portfolio/trading/scripts/mailtm.sh) 建一個拋棄式信箱
 2. 呼叫第一個 API，觸發 Tradovate 寄驗證信到這個信箱
 3. 用 `mailtm.sh` 輪詢收件匣，等驗證信進來，抓出裡面的驗證連結
 4. 呼叫第二個 API，帶上驗證連結裡的 token，完成註冊
@@ -188,7 +188,7 @@ TradingView 上面看到的指標，都是用 TradingView 開發的 pine script 
 
 ### 情境 1: 如何取得 TradingView 的 K 棒資料
 
-> [`/chart-archive`](portfolio/ai-collaboration/experience/trading/skills/chart-archive.md) + [`chart-archive.mjs`](portfolio/ai-collaboration/experience/trading/scripts/chart-archive.mjs)
+> [`/chart-archive`](portfolio/trading/skills/chart-archive.md) + [`chart-archive.mjs`](portfolio/trading/scripts/chart-archive.mjs)
 
 我要開發的交易指標是用 Pine Script 寫的，它跑在 TradingView 這個網頁平台的沙盒裡。Claude Code 完全看不到 TradingView 上面的 K 線圖，也摸不到裡面的資料。
 
@@ -206,7 +206,7 @@ TradingView 上面看到的指標，都是用 TradingView 開發的 pine script 
 
 第二個，TradingView 的短週期 K 線只保留有限天數（1 分鐘的大約只有 30 天）。如果不定期撈，過了就沒了。所以我設計了增量歸檔的機制：記錄每個時間週期最後一根 K 線的時間，下次只撈那之後的新資料，不重撈舊的。
 
-最後包成了 `/chart-archive` skill 和 [`chart-archive.mjs`](portfolio/ai-collaboration/experience/trading/scripts/chart-archive.mjs)，支援 7 個時間週期（從 1 分鐘到週線），每天跑一次就能把最新的 K 線歸檔到本地。
+最後包成了 `/chart-archive` skill 和 [`chart-archive.mjs`](portfolio/trading/scripts/chart-archive.mjs)，支援 7 個時間週期（從 1 分鐘到週線），每天跑一次就能把最新的 K 線歸檔到本地。
 
 ### 情境 2: 如何讓 Claude Code 理解我在 TradingView 上面畫的圖
 
@@ -218,7 +218,7 @@ TradingView 上面看到的指標，都是用 TradingView 開發的 pine script 
 
 ## Eagle
 
-> [README.md](portfolio/ai-collaboration/experience/eagle/README.md)
+> [README.md](portfolio/eagle/README.md)
 
 把「飛鷹地產」的後端，從 ASP.NET + mssql 轉成 NestJS + PostgreSQL
 在軟體開發時，為了工作所開發的各種 skills
