@@ -1,15 +1,14 @@
 # WG-SOP MTF — 支撐壓力線 & 開盤首K 開發歷程
 
-> 整理日期：2026-06-05
-> 涵蓋功能：S/R 支撐壓力線、開盤首K
-> 涵蓋版本：WG-SOP MTF v3.1 ~ v3.26
-> 不涵蓋：盤整偵測演算法（A4/A5/A7）、突破計數器、翻亞當目標 — 這些是 WG 自研功能
 
----
+Eli 老師有兩個官方看不到程式碼，用授權的 TradingView 指標
+- [破框策略指標](https://www.youtube.com/watch?v=UPiurxFL-qc)
+- [首Ｋ策略指標](https://youtu.be/4oAKOBbKmBk?si=h0J1MWC1Vpc5QKxe)
 
-## 背景
 
-Eli 老師有兩個官方 TradingView 指標（加密，source code 不可見）。我們透過截圖觀察、設定面板逆向、Bar Replay 回放比對、NLM 課程逐字稿查詢等方式研究其行為，再用自己的方式在 WG-SOP MTF 中重現。
+我們透過截圖觀察、設定面板逆向、Bar Replay 回放比對、NLM 課程逐字稿查詢等方式研究其行為，再用自己的方式在 WG-SOP MTF 中重現。
+
+
 
 本文聚焦在 WG-SOP MTF 中 S/R 撐壓線和開盤首K 的**實作開發歷程**。
 

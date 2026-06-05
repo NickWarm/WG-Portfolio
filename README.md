@@ -4,9 +4,13 @@
 1. **Trading**: 我個人學習交易的專案
 2. **Eagle**：把 [飛鷹地產](https://www.eagle111.com/) 的後端，從 [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet) (C# 的框架) + MSSQL 改成 NestJS (TypeScript 的框架) + PostgreSQL
 
-會先從 Trading 開始，因為他是完全陌生的領域，會展示我如何透過 AI 學習這個完全陌生的領域
+在 README 這邊只會放 Trading，因為他是完全陌生的領域，會展示我如何透過 AI 學習這個完全陌生的領域
 
 以及我的各種重複性工作的需求，我如何用 AI 把他自動化，節省我的時間，讓我的專注力放在重要需要思考與決策的地方
+
+這會跟我有興趣的跨傳統後端領域之外的軟體開發經驗有關。
+
+Eagle 會是傳統後端工程師的工作範疇，非常的 Claude Code skill 開發技術導向，就會獨立一篇文章，請見 []()。
 
 ## Trading
 
@@ -326,11 +330,3 @@ Claude Code 先用 `gh` 找到 [mitchell-917](https://github.com/mitchell-917/tr
 
 完整的開發歷程 （包含每個版本遇到什麼問題、怎麼解決、踩了什麼坑）
 - [WG-SOP MTF — 支撐壓力線 & 開盤首K 開發歷程](portfolio/trading/docs/sr-and-opening-k-development-history.md)
-
----
-
-## Eagle
-
-把「飛鷹地產」的後端，從 ASP.NET + mssql 轉成 NestJS + PostgreSQL
-在軟體開發時，為了工作所開發的各種 skills
-
