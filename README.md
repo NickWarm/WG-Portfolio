@@ -78,7 +78,7 @@
 
 我一樣透過 `gh` 讓 Claude Code 找到 [yt-dlp](https://github.com/yt-dlp/yt-dlp) 這個工具。它除了能下載 YouTube 影片，還能抓取一個頻道上所有影片的清單。
 
-有了這個工具後，我設計了 `/yt-sync` skill，他依序執行
+有了這個工具後，我設計了 [`/yt-sync`](portfolio/trading/skills/yt-sync.md) skill，他依序執行
 1. `yt-dlp` 抓頻道清單、比對差集
 2. `NLM MCP` 的 `source_add` 把新直播加進 NLM
 3. `NLM MCP` 的 `notebook_query` 直接問「新直播跟舊的有什麼不同」→ 產出 markdown file 差異分析報告
@@ -102,7 +102,7 @@
 
 後來，我想到一個方式，我可以透過 yt-dlp 取得音訊，然後找找看有沒有什麼 open source 可以處理音訊轉字幕，這樣我就能取得 srt 字幕檔來快速定位影片的幾分幾秒，是我需要的資訊了
 
-於是我又讓 Claude Code 用 `gh` 找到了 [mlx_whisper](https://github.com/ml-explore/mlx-examples)，這是一個在 Apple 晶片上跑的語音轉文字工具，速度很快。搭配前面的 [yt-dlp](https://github.com/yt-dlp/yt-dlp)，我設計了 `/transcribe` 和 `/vck` 兩個 skill，依序執行
+於是我又讓 Claude Code 用 `gh` 找到了 [mlx_whisper](https://github.com/ml-explore/mlx-examples)，這是一個在 Apple 晶片上跑的語音轉文字工具，速度很快。搭配前面的 [yt-dlp](https://github.com/yt-dlp/yt-dlp)，我設計了 [`/transcribe`](portfolio/trading/skills/transcribe.md) 和 [`/vck`](portfolio/trading/skills/vck.md) 兩個 skill，依序執行
 
 1. `yt-dlp` 只下載音訊（不下載影片，省空間）
 2. `mlx_whisper` 把音訊轉成帶時間戳記的逐字稿
@@ -141,7 +141,7 @@
 
 ### 情境 2: 如何找出 Tradovate 背後用的 API
 
-> [`/sniff`](portfolio/trading/scripts/capture.mjs)
+> [`/sniff`](portfolio/trading/skills/sniff.md) + [`capture.mjs`](portfolio/trading/scripts/capture.mjs)
 
 有了 **mail.tm** 之後，第二個問題是：Tradovate 的註冊頁面，點下「Sign Up」按鈕後，背後到底打了哪個 API？
 
@@ -167,7 +167,7 @@
 >
 > ⚠️ 腳本中的 API 路徑已去識別化，避免在公開平台透露第三方服務的內部 API path
 
-有了 mail.tm 能讓程式收信，又有了 `/sniff` 找出來的兩個 API，接下來就是把它們串起來。
+有了 mail.tm 能讓程式收信，又有了 [`/sniff`](portfolio/trading/skills/sniff.md) 找出來的兩個 API，接下來就是把它們串起來。
 
 就能讓 Claude Code 把整個流程包成 [`tradovate-new.sh`](portfolio/trading/scripts/tradovate-new.sh)，它依序執行四步：
 
@@ -186,33 +186,61 @@ TradingView 上面看到的指標，都是用 TradingView 開發的 pine script 
 
 傳統遇到問題，我
 
-### 情境 1: 如何取得 TradingView 的 K 棒資料
+### 情境 1: 如何取得 TradingView 的 K棒資料
 
 > [`/chart-archive`](portfolio/trading/skills/chart-archive.md) + [`chart-archive.mjs`](portfolio/trading/scripts/chart-archive.mjs)
 
-我要開發的交易指標是用 Pine Script 寫的，它跑在 TradingView 這個網頁平台的沙盒裡。Claude Code 完全看不到 TradingView 上面的 K 線圖，也摸不到裡面的資料。
+我要開發的交易指標是用 Pine Script 寫的，它跑在 TradingView 這個網頁平台的沙盒裡。Claude Code 完全看不到 TradingView 上面的K棒圖，也摸不到裡面的資料。
 
 這代表一件事：我改了指標邏輯之後，沒辦法用程式驗證結果對不對，只能用眼睛看圖表。這在複雜的指標開發中很容易漏掉問題。
 
-所以第一步，我需要把 K 線資料從 TradingView 拉出來，讓 Claude Code 也能看到同樣的數據。
+所以第一步，我需要把K棒資料從 TradingView 拉出來，讓 Claude Code 也能看到同樣的數據。
 
-但 TradingView 沒有公開的 K 線資料 API。不過我想，瀏覽器打開 TradingView 時，背後一定有在打某個 API 取資料。如果我能找到那個 API，程式就能撈同樣的東西。
+但 TradingView 沒有公開的K棒資料 API。不過我想，瀏覽器打開 TradingView 時，背後一定有在打某個 API 取資料。如果我能找到那個 API，程式就能撈同樣的東西。
 
-於是我讓 Claude Code 用 `gh` 搜尋，找到了 [TradingView-API](https://github.com/Mathieu2301/TradingView-API) 這個 open source，它可以透過 WebSocket 拉 K 線的 OHLCV 資料（開盤、最高、最低、收盤、成交量）。
+於是我讓 Claude Code 用 `gh` 搜尋，找到了 [TradingView-API](https://github.com/Mathieu2301/TradingView-API) 這個 open source，它可以透過 WebSocket 拉K棒的 OHLCV 資料（開盤、最高、最低、收盤、成交量）。
 
 不過這邊遇到兩個問題：
 
 第一個，TradingView 需要登入才能取資料。我又讓 Claude Code 用 `gh` 找到了 [rookiepy](https://github.com/borisbabic/browser_cookie3)，它可以從 Chrome 解密出 TradingView 的登入 cookie。我把它包成一套共用的快取機制 — cookie 存在一個 JSON 檔裡，7 天過期後自動更新，所有工具共用同一份。
 
-第二個，TradingView 的短週期 K 線只保留有限天數（1 分鐘的大約只有 30 天）。如果不定期撈，過了就沒了。所以我設計了增量歸檔的機制：記錄每個時間週期最後一根 K 線的時間，下次只撈那之後的新資料，不重撈舊的。
+第二個，TradingView 的短週期K棒只保留有限天數（1 分鐘的大約只有 30 天）。如果不定期撈，過了就沒了。所以我設計了增量歸檔的機制：記錄每個時間週期最後一根K棒的時間，下次只撈那之後的新資料，不重撈舊的。
 
-最後包成了 `/chart-archive` skill 和 [`chart-archive.mjs`](portfolio/trading/scripts/chart-archive.mjs)，支援 7 個時間週期（從 1 分鐘到週線），每天跑一次就能把最新的 K 線歸檔到本地。
+最後包成了 [`/chart-archive`](portfolio/trading/skills/chart-archive.md) skill 和 [`chart-archive.mjs`](portfolio/trading/scripts/chart-archive.mjs)，支援 7 個時間週期（從 1 分鐘到週線），每天跑一次就能把最新的K棒歸檔到本地。
 
 ### 情境 2: 如何讓 Claude Code 理解我在 TradingView 上面畫的圖
 
+> - [`/draw-verify`](portfolio/ai-collaboration/experience/trading/skills/draw-verify.md) + [`draw-verify.mjs`](portfolio/ai-collaboration/experience/trading/scripts/draw-verify.mjs) + 
+> - [`/ig`](portfolio/ai-collaboration/experience/trading/skills/ig.md) + [`fetch-indicator-graphic.mjs`](portfolio/ai-collaboration/experience/trading/scripts/fetch-indicator-graphic.mjs)
+
+
+K棒資料有了，但接下來的問題是：我的開發流程是「先在 TradingView 上手動畫圖做標記，再用程式去驗證邏輯」。比如我會在圖表上畫兩條線標出盤整區間、標出突破點、畫出亞當目標價。但 Claude Code 看不到我的畫面，它不知道我畫了什麼、畫在哪個價格。
+
+我需要解決兩件事：第一，確認程式拉到的繪圖資料跟畫面上一致；第二，讓程式能讀懂指標自動畫出來的東西。
+
+#### **先講第一件事 — 驗證手動畫的圖。**
+
+前面情境 1 用 `gh` 找到的 [TradingView-API](https://github.com/Mathieu2301/TradingView-API)，除了能拉 K棒資料，我後來發現它還有 HTTP API 可以拉到我在 TradingView 上手動畫的所有繪圖的座標和報價。
+
+這很關鍵，因為如果程式拉到的報價跟 TradingView 畫面上看到的不一樣，那後面所有的 Pine Script 開發都建立在錯誤的資料上。所以我先做了一個驗證工具：程式同時拉繪圖報價和 K棒數據，輸出到終端機，我再對照 TradingView 畫面確認兩邊一致。確認可信之後，才敢往下做。
+
+這就是 [`/draw-verify`](portfolio/ai-collaboration/experience/trading/skills/draw-verify.md) 這個 skill 在做的事。
+
+#### **第二件事比較有趣 — 讓程式讀懂指標自動畫出來的圖。**
+
+我寫的 Pine Script 指標會自動在圖表上畫出盤整框、突破標記、亞當目標線這些東西。同一個 [TradingView-API](https://github.com/Mathieu2301/TradingView-API) 也能讀取指標畫出來的 graphic 物件（box、label、line）— 這本來我以為做不到，後來翻它的範例才發現原來支援。
+
+但問題是，讀出來的只有座標數字，程式不知道「這個框是盤整框」還是「那個標記是突破訊號」。
+
+我的解法是在 Pine Script 裡面埋「隱藏標記」：把 box 裡的文字設成完全透明（肉眼看不到），但文字內容寫的是類型標記，像 `CONS_15m` 代表 15 分鐘的盤整框；label 的 tooltip 寫 `BREAKOUT_15m_UP` 代表 15 分鐘的向上突破。TradingView 畫面上完全看不到這些標記，但程式透過 API 讀得到。
+
+這樣 Claude Code 就能知道：這個框是盤整框、那條線是亞當目標、這個標記是突破訊號。不同指標之間原本因為 Pine Script 的沙盒限制完全無法互相傳資料，透過這套隱藏標記的機制，等於繞過了這個限制。
+
+這就是 [`/ig`](portfolio/ai-collaboration/experience/trading/skills/ig.md) 這個 skill 在做的事。
+
 ### 情境 3: 如何從零實作出 eli 的首Ｋ策略的指標，與破框策略的指標
 
-### 情境 4:
+
 
 ---
 
