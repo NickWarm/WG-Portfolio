@@ -1,16 +1,16 @@
 # Experience
 
 這邊會分享我開始用 AI 學習與寫程式的經歷
-1. **Trading**: 我個人學習交易的專案
-2. **Eagle**：把 [飛鷹地產](https://www.eagle111.com/) 的後端，從 [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet) (C# 的框架) + [MSSQL](https://www.microsoft.com/zh-tw/sql-server) 改成 [NestJS](https://nestjs.com/) ([TypeScript](https://www.typescriptlang.org/) 的框架) + [PostgreSQL](https://www.postgresql.org/)
+1. [**Trading**](portfolio/trading): 我個人學習交易的專案
+2. [**Eagle**](portfolio/eagle)：把 [飛鷹地產](https://www.eagle111.com/) 的後端，從 [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet) (C# 的框架) + [MSSQL](https://www.microsoft.com/zh-tw/sql-server) 改成 [NestJS](https://nestjs.com/) ([TypeScript](https://www.typescriptlang.org/) 的框架) + [PostgreSQL](https://www.postgresql.org/)
 
-在 README 這邊只會放 Trading，因為他是完全陌生的領域，會展示我如何透過 AI 學習這個完全陌生的領域
+在 README 這邊只會放 [**Trading**](portfolio/trading)，因為他是完全陌生的領域，會展示我如何透過 AI 學習這個完全陌生的領域
 
 以及我的各種重複性工作的需求，我如何用 AI 把他自動化，節省我的時間，讓我的專注力放在重要需要思考與決策的地方
 
-這會跟我有興趣的跨傳統後端領域之外的軟體開發經驗有關。
+在 AI 時代，我可以跨出後端領域開發出跟自己背景無關的技術，這是我目前很感興趣的事。
 
-Eagle 會是傳統後端工程師的工作範疇，非常的 Claude Code skill 開發技術導向，會獨立另一篇文章
+[**Eagle**](portfolio/eagle) 是傳統後端工程師的工作範疇，非常的 Claude Code skill workflow 跟 agent 與 prompt 的設計有關，詳情請見
 - [「飛鷹地產」後端開發的 Claude Code skill workflow](portfolio/eagle/skill-workflows.md)
 
 ## Trading
