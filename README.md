@@ -2,7 +2,7 @@
 
 這邊會分享我開始用 AI 學習與寫程式的經歷
 1. **Trading**: 我個人學習交易的專案
-2. **Eagle**：把 [飛鷹地產](https://www.eagle111.com/) 的後端，從 [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet) (C# 的框架) + MSSQL 改成 NestJS (TypeScript 的框架) + PostgreSQL
+2. **Eagle**：把 [飛鷹地產](https://www.eagle111.com/) 的後端，從 [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet) (C# 的框架) + [MSSQL](https://www.microsoft.com/zh-tw/sql-server) 改成 [NestJS](https://nestjs.com/) ([TypeScript](https://www.typescriptlang.org/) 的框架) + [PostgreSQL](https://www.postgresql.org/)
 
 在 README 這邊只會放 Trading，因為他是完全陌生的領域，會展示我如何透過 AI 學習這個完全陌生的領域
 
@@ -279,7 +279,7 @@ K棒資料有了，但接下來的問題是：我的開發流程是「先在 Tra
 
 ### 情境 3: 如何開發出符合 Pine Script 社群風格且效能好的程式碼
 
-> [`/psbp`](portfolio/ai-collaboration/experience/trading/skills/psbp.md): 按社群規範做 code review + 分階段重構，每階段都要在 TradingView 確認視覺一致才 commit
+> [`/psbp`](portfolio/trading/skills/psbp.md): 按社群規範做 code review + 分階段重構，每階段都要在 TradingView 確認視覺一致才 commit
 
 Pine Script 的開發很不容易，不像現在軟體開發班便利
 1. 沒有自動格式化工具
@@ -297,11 +297,11 @@ Pine Script 的開發很不容易，不像現在軟體開發班便利
 - 不重複寫一樣的東西（DRY 原則）
 - 命名一致好讀
 
-我把這些規範整理成一份文件（[`pinescript-design-patterns.md`](portfolio/ai-collaboration/experience/trading/docs/pinescript-design-patterns.md)），然後設計了 [`/psbp`](portfolio/ai-collaboration/experience/trading/skills/psbp.md) 這個 skill，讓 Claude Code 可以按這套規範幫我做 code review 和重構。
+我把這些規範整理成一份文件（[`pinescript-design-patterns.md`](portfolio/trading/docs/pinescript-design-patterns.md)），然後設計了 [`/psbp`](portfolio/trading/skills/psbp.md) 這個 skill，讓 Claude Code 可以按這套規範幫我做 code review 和重構。
 
 重構不是一次改完。`/psbp` 會把改動拆成好幾個階段，每個階段獨立、可驗證。每改完一個階段，我都要把程式碼貼到 TradingView 上確認畫面跟改之前完全一樣，確認沒改壞，才能繼續下一階段。
 
-另外，重構前後我還會用 JavaScript 寫模擬腳本（[`sim-sr-refactor.mjs`](portfolio/ai-collaboration/experience/trading/scripts/sim-sr-refactor.mjs)），用假資料跑一遍重構前和重構後的邏輯，確認輸出完全一致。視覺驗證 + 邏輯驗證，兩道保險。
+另外，重構前後我還會用 JavaScript 寫模擬腳本（[`sim-sr-refactor.mjs`](portfolio/trading/scripts/sim-sr-refactor.mjs)），用假資料跑一遍重構前和重構後的邏輯，確認輸出完全一致。視覺驗證 + 邏輯驗證，兩道保險。
 
 舉個實際的例子：我的支撐壓力線功能，第一版有 48 個散落的變數、合併邏輯重複寫了 6 次、繪圖程式碼也重複 6 次。如果要加一個新的時間週期，得改 20 幾個地方。
 

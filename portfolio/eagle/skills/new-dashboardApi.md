@@ -1,9 +1,9 @@
 ---
 description: 重建乾淨的 adminApi branch（從最新 dev 切出）
-design-doc: prompts/4_diary/debug/proposal/slash/new-adminApi_skill_proposal.md
+design-doc: prompts/4_diary/debug/proposal/slash/new-dashboardApi_skill_proposal.md
 ---
 
-@.claude/flowcharts/new-adminApi_flowchart.md
+@.claude/flowcharts/new-dashboardApi_flowchart.md
 
 ## 任務
 
@@ -50,7 +50,7 @@ design-doc: prompts/4_diary/debug/proposal/slash/new-adminApi_skill_proposal.md
    ```bash
    git status --porcelain
    ```
-   - 有輸出 → 執行 `git stash push -m "new-adminApi: 暫存修改"`，記錄 `STASHED=true`
+   - 有輸出 → 執行 `git stash push -m "new-dashboardApi: 暫存修改"`，記錄 `STASHED=true`
    - 無輸出 → 記錄 `STASHED=false`
 
 3. Detach HEAD 釋放 adminApi branch（供 Step 5 刪除用）：

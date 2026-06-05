@@ -1,7 +1,7 @@
-# /new-adminApi 執行流程
+# /new-dashboardApi 執行流程
 
 ```
-/new-adminApi 執行流程
+/new-dashboardApi 執行流程
 │
 ├─ 1. 【前置檢查】
 │   ├─ git fetch origin adminApi dev
@@ -14,7 +14,7 @@
 ├─ 2. 【暫存主 workspace 修改】
 │   ├─ cd backend-nestjs（確保在主 workspace）
 │   ├─ git status 檢查是否有未 commit 修改
-│   ├─ 有修改 → git stash push -m "new-adminApi: 暫存修改"，記錄 STASHED=true
+│   ├─ 有修改 → git stash push -m "new-dashboardApi: 暫存修改"，記錄 STASHED=true
 │   ├─ 無修改 → 記錄 STASHED=false
 │   └─ git checkout --detach HEAD（釋放 adminApi branch 供 Step 5 刪除）
 │

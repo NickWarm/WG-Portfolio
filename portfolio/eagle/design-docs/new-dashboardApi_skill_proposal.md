@@ -1,4 +1,4 @@
-# new-adminApi 設計稿
+# new-dashboardApi 設計稿
 
 > 📅 建立日期：2026-02-12
 
@@ -16,7 +16,7 @@
 ## 執行流程圖
 
 ```
-/new-adminApi 執行流程
+/new-dashboardApi 執行流程
 │
 ├─ 1. 【前置檢查】
 │   ├─ git fetch origin adminApi dev
@@ -26,7 +26,7 @@
 │
 ├─ 2. 【暫存主 workspace 修改】
 │   ├─ git status 檢查是否有未 commit 修改
-│   ├─ 有修改 → git stash push -m "new-adminApi: 暫存修改"
+│   ├─ 有修改 → git stash push -m "new-dashboardApi: 暫存修改"
 │   ├─ 無修改 → 跳過 stash，記錄 STASHED=false
 │   └─ git checkout --detach HEAD（釋放 adminApi branch 供 Step 5 刪除）
 │
@@ -60,7 +60,7 @@
 
 | 參數 | 必要 | 說明 | 範例 |
 |------|------|------|------|
-| 無 | - | 此 skill 不需要參數 | `/new-adminApi` |
+| 無 | - | 此 skill 不需要參數 | `/new-dashboardApi` |
 
 ---
 
@@ -111,7 +111,7 @@ git fetch origin adminApi dev
 git log origin/adminApi --oneline --not origin/dev
 
 # Step 2: 暫存
-git stash push -m "new-adminApi: 暫存修改"
+git stash push -m "new-dashboardApi: 暫存修改"
 git checkout --detach HEAD
 
 # Step 3: 刪除 remote
