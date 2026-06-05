@@ -11,7 +11,7 @@
 在 AI 時代，我可以跨出後端領域開發出跟自己背景無關的技術，這是我目前很感興趣的事。
 
 [**Eagle**](portfolio/eagle) 是傳統後端工程師的工作範疇，非常的 Claude Code skill workflow 跟 agent 與 prompt 的設計有關，詳情請見
-- [「飛鷹地產」後端開發的 Claude Code skill workflow](portfolio/eagle/skill-workflows.md)
+- [「飛鷹地產」後端開發的 Claude Code skill workflow](portfolio/eagle/README.md)
 
 ## Trading
 

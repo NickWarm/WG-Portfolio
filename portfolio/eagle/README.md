@@ -1,152 +1,186 @@
-# AI 輔助開發流程設計（去識別化版 · 可公開）
+# 「飛鷹地產」後端開發的 Claude Code skill workflow
 
-> 本檔為去識別化版本，可用於履歷／作品集（`portfolio/projects/`）。
-> 已移除：真實 API route、伺服器 IP、資料庫帳密等敏感資訊。
-> 對應內部完整版見 `../original/`（僅存本機，不公開）。
+把「飛鷹地產」的後端從 ASP.NET + MSSQL 重寫成 NestJS + PostgreSQL，是一段很長的工程。過程中我慢慢發現，真正吃掉時間的往往不是寫程式本身，而是**那些固定、重複、又容易出錯的開發流程**。
 
----
+舉個例子：光是修一張後台的 bug 票，就要走「匯出工單 → 連資料庫分析 → 寫修復提案 → 檢核提案 → 實作 → 切到對應環境驗證 → commit → 回報前端」八九個步驟。步驟每次都差不多，但靠腦袋記，總有漏掉的時候；而且錯誤處理怎麼寫、回傳型別、多環境的資料庫切換，每個人習慣都不一樣，品質很不穩。
 
-## 一句話定位
+這種工作就該自動化。但它跟我在交易那邊做的自動化不太一樣——不是寫一個腳本跑完就結束，而是要把「一整套開發 SOP」拆成一個個**可重複呼叫、可像積木組合的指令（Claude Code Skills）**，再依不同工作把它們串成流程。
 
-在**飛鷹地產**（房地產 SaaS）的 NestJS 後端專案中，我把團隊「靠資深工程師腦袋記住」的開發 SOP，
-工程化成一套 **35 個可組合的 AI 指令（Claude Code Skills）+ 自動護欄（Hooks）+ 設計稿** 的系統，
-讓「修 bug、API 對齊、部署」這類多步驟工作變成**可重複、有護欄、可交接**的標準管線。
+## 一條流水線不夠用——所以拆成四條
 
----
+我一開始想把所有開發塞進同一條流程，但很快發現綁不住，因為這些工作的**本質根本不同**：
 
-## 背景與問題
+- 修一張後台 bug 票，重點是「分析 → 提案 → 實作 → 驗證」；
+- 把官網 API 從 v1 重寫成 v2，重點是「**證明 v2 沒有改壞任何東西**」，幾乎不寫新功能；
+- 幫前端 debug，重點是「**對齊前端畫面 ↔ 後端 API ↔ DB**」；
+- 修一類散在幾十個模組裡的共通漏洞，重點是「**橫向掃描 + 分批追蹤**」。
 
-後端是一套房地產 SaaS，分為兩塊 API：
-- 後台管理 API（`adminApi`，對應後台前端）
-- 官網前台 API（`publicApi`，對應官網前端）
+所以我把它設計成**四條獨立的總流程**，每條解決一種工作：
 
-開發上反覆出現幾個痛點：
+- **A. 後台 API 開發／修復** — 修 bug 或主動修，要可重複、有把關
+- **B. 官網 API v2 遷移驗證** — v1 重寫成 v2，要證明沒改壞
+- **C. 前後端同步／幫前端 debug** — 對齊「畫面 ↔ API ↔ DB」
+- **D. 橫向漏洞掃描修復** — 系統化掃幾十個模組、分批追蹤
 
-1. **流程固定但靠人記** — 修一張 bug 票要走「匯出票 → 分析 → 寫提案 → 檢核 → 實作 → 驗證 → commit → 回報前端」八九個步驟，每次靠記憶，容易漏步驟。
-2. **品質不一** — 錯誤處理寫法、回傳型別、資料量防護、多環境 DB 切換，每個人習慣不同。
-3. **新人上手慢** — 流程知識散在資深工程師腦中，沒有可執行的標準。
-4. **危險操作** — 誤連遠端 DB 跑 migration、commit 簽錯身份、誤改主專案（worktree 情境）。
+每條流程用到哪些 skill、為什麼這樣設計，下面一條一條說（需要時用 [`/showFlow`](skills/showFlow.md) 隨時印出流程圖）。另外還有一層**貫穿四條流程的支撐層**，讓它們「不靠人記、可交接」，最後再談。
 
----
+> 說明：以下展示工作流程的邏輯、資料表與函式名稱、文字流程圖，不含實際程式碼、資料庫連線方式與真實 API 路徑。adminApi＝後台管理 API、publicApi＝官網前台 API。
 
-## 系統架構（三層）
+## 每個 skill 執行的詳細流程圖
 
-```
-AI 輔助開發系統
-│
-├─ 1.【Skills 層】35 個 slash command
-│     └─ 每個 skill 負責流程中的一個步驟，可像積木一樣串接
-│
-├─ 2.【Hooks 層】PreToolUse / PostToolUse 自動護欄
-│     └─ 不靠人記、由系統強制
-│
-└─ 3.【設計稿層】每個 skill 一份設計稿 + 一張流程圖
-      └─ 確保可維護、可交接
-```
+開發時，直接讀 claude code 提出的 markdown 提案，字數會太多，所以我喜歡 AI 做出文字流程圖，
 
-**配置管理**：實際配置集中於專案 `.claude/`，並透過 Hook 在修改時自動同步備份到獨立的文件庫專案。
+在 skill 的設計上，也會採用這種設計模式
+
+在「飛鷹地產」開發時所用到的 skill 的設計，整理到 [`flowcharts`](flowcharts/) folder 裡面去，有興趣可以參閱。
 
 ---
 
-## 三條工作流程（核心設計）
+## 總流程 A：後台 API 開發／修復
 
-把所有開發工作歸納成 **3 條主線**，依「進入點」區分。可用 `/showFlow` 隨時印出流程圖。
+### 要解決的目標
 
-### 流程 A：API 結構建立（建立基礎資料 / 地圖）
+修一張後台 bug 票，要走「匯出工單 → 分析 → 寫提案 → 檢核 → 實作 → 驗證 → commit → 回報前端」八九個步驟。每次靠記憶容易漏步驟；錯誤處理寫法、回傳型別、資料量防護又因人而異。目標是**把這類多步工作變成可重複、有護欄、可交接的標準管線**。
 
-```
-/pull-frontend → /build-ui-index → /api-flow-architecture {api} → /review-api-flow {api}
-拉前端最新       建 UI-API 索引     建後端結構文件                 前後端對齊 → 產出問題清單(❌/⚠️)
-```
-產出的「問題清單／data-flow」是後續修復的參照地圖。
+### workflow 怎麼設計（為何這樣設計）
 
-### 流程 B：Data Flow 驅動修復（工單「開票前」主動修）
+- **先歸納再復用**：十幾種開發情境（新 API、調整、重構、bug、欄位映射……）最後都收斂成「產出一份 proposal → 依 proposal 修改 → 驗證 → 收尾」。差別只在**前段怎麼生出 proposal**。
+- **抽出共用核心段**：把後段設計成同一段復用——`reviewDoc → reviewDoc -data → implement → check-result → gcommit-push → fxxxf2e`。維護一次，多條主線同時受益。
+- **只在「進入點」分叉**：工單開票前用 `/dpf`（吃主動掃描的問題清單），開票後用 `/exportN`→`/debugP`（吃工單）。
+- **檢核循環刻意拆成獨立 skill**：`/reviewDoc`（檢核）和 `/rrDoc`（依建議修正後再檢核）各自獨立、可重複呼叫，且 `/reviewDoc` 在報告問題後會停下來等我確認、不自己改。循環由我手動驅動，確保**每一輪修改都經過人工把關**。
 
-```
-/dpf {api} → /reviewDoc → /reviewDoc -data {env} → /implement → /check-result {env} → /gcommit-push → /fxxxf2e
-從問題清單     一般檢核     推導 cases+撈 DB 資料      實作          切 DB 驗證            commit         前端建議
-生 proposal   ⏭️跳過 add-pi
-```
-特點：**不等工單就主動修**，吃流程 A 的問題清單，不需要 bug spec。
-
-### 流程 C：Bug Fix（工單「開票後」）
+### 單行文字流程圖
 
 ```
-/exportN [工單] → /debugP {env} → /add-pi → /reviewDoc → /reviewDoc -data {env}
-匯出工單→spec     分析→proposal    納入潛在問題  完整檢核    推導 cases+撈資料
-  → /implement → /check-result {env} → /gcommit-push → /fxxxf2e
-     實作            用備好的資料驗證      commit+更新進度       前端建議+罐頭留言
+A-1 結構建立（先畫地圖）  /pull-frontend → /build-ui-index → /api-flow-architecture → /review-api-flow
+A-2 開票前（主動修）      /dpf → /reviewDoc → /reviewDoc -data → /implement → /check-result → /gcommit-push → /fxxxf2e
+A-3 開票後（Bug Fix）     /exportN → /debugP → /add-pi → /reviewDoc → /reviewDoc -data → /implement → /check-result → /gcommit-push → /fxxxf2e
 ```
 
-**B 與 C 的共同核心段**（設計上刻意復用）：
-```
-reviewDoc → reviewDoc -data → implement → check-result → gcommit-push → fxxxf2e
-```
+> A-2 與 A-3 只有「進入點」不同，灰底的 `reviewDoc → … → fxxxf2e` 是兩條共用的核心段。
 
-| | 進入點 | 起手 skill | 需 bug spec | add-pi |
-|---|--------|-----------|------------|--------|
-| B（開票前）| 主動掃描的問題清單 | `/dpf` | ❌ | ⏭️ 跳過 |
-| C（開票後）| 工單系統 | `/exportN` | ✅ | ✅ |
+### 各 skill 用途
+
+- [`/pull-frontend`](skills/pull-frontend.md)：拉兩個前端專案（官網、後台）最新進度
+- [`/build-ui-index`](skills/build-ui-index.md)：掃前端程式碼，建立「UI 元件 ↔ 後端 API」索引
+- [`/api-flow-architecture`](skills/api-flow-architecture.md)：建立後端 API 結構文件（Entity / DTO / Service / Controller）
+- [`/review-api-flow`](skills/review-api-flow.md)：前後端對齊檢查，產出問題清單（❌/⚠️），當作 A-2 的彈藥庫
+- [`/dpf`](skills/dpf.md)：開票前主動修的進入點——吃 `/review-api-flow` 的問題清單，直接生 proposal（不需工單規格）
+- [`/exportN`](skills/exportN.md)：把工單匯出成本地 bug 規格
+- [`/debugP`](skills/debugP.md)：連上資料庫分析 bug，產出 proposal
+- [`/add-pi`](skills/add-pi.md)：把該模組已知的潛在問題一併納入 proposal
+- [`/reviewDoc`](skills/reviewDoc.md)：檢核提案品質（含程式碼品質、資料流交叉檢核），報告後停下等確認
+- [`/rrDoc`](skills/rrDoc.md)：依檢核建議修正提案後再檢核一次
+- [`/implement`](skills/implement.md)：依 proposal 實作，自動檢核 + build 驗證
+- [`/check-result`](skills/check-result.md)：切到 dev/staging DB，用 local API 驗證修正結果
+- [`/gcommit-push`](skills/gcommit-push.md)：更新 proposal + commit + 推送
+- [`/fxxxf2e`](skills/fxxxf2e.md)：從 proposal 抽出前端要怎麼改，產生給前端的罐頭留言
 
 ---
 
-## 35 個 Skill 分類
+## 總流程 B：官網 API v2 遷移驗證
 
-| 類別 | Skills | 作用 |
-|------|--------|------|
-| **流程編排** | showFlow | 印三條流程圖、在 proposal 置頂建進度表 |
-| **入口/匯出** | exportN, debugP, dpf | 從工單或問題清單建立 proposal |
-| **文件檢核** | reviewDoc, rrDoc, add-pi, splitP, read-data-flow | 提案品質檢核（自動驗證）、納入潛在問題、拆分過大提案 |
-| **實作** | implement | 依提案實作 + 自動檢核 + build 驗證 |
-| **驗證** | check-result, verify-QA, verifyOWS, review-api-flow | 切多環境 DB 驗證、三方欄位比對、v1↔v2 比對 |
-| **部署** | gcommit-push, merge-to-deploy, runMigration, new-dashboardApi | commit、合併到 dev、遠端 migration、重建乾淨 branch |
-| **前端銜接** | fxxxf2e, pull-frontend, run-frontend, build-ui-index | 前端修改建議、拉前端、啟前端 dev server、建 UI 索引 |
-| **架構知識** | api-flow-architecture, guideArchitecture, guideA, findDoc, know-cc-config | 建/讀架構文件、載入架構知識、查文件、讀配置 |
-| **修復工具** | fix-id-string-number, fixPermissionError | 掃 DTO id 型別、掃權限錯誤訊息自動生提案 |
-| **Meta/維護** | updateDesign, syncCompact, sm, readDesign, epl | 同步 skill 設計稿、同步指令、session memory、讀設計規則、解釋提案 |
-| **雜項** | dl-video | 下載串流影片 |
+### 要解決的目標
 
----
+官網 API 從 v1 重寫成 v2，重點不是寫新功能，而是**證明「v2 沒有改壞任何東西」**。過去要人工開官網跟大後台兩個畫面肉眼比對，費時又容易漏，而且沒有紀錄、改完無法快速重跑。
 
-## Hook 護欄系統（品質從「靠人記」→「系統強制」）
+### workflow 怎麼設計（為何這樣設計）
 
-| Hook | 觸發 | 作用 |
-|------|------|------|
-| local DB 檢查 | Bash | migration 前檢查是否連 local DB，誤連遠端會阻止 |
-| DB 連線環境守衛 | DB REPL | 驗證連線環境正確 |
-| Git 身份守衛 | git commit | 強制正確 commit 身份簽名 |
-| 自動 Prettier | Write/Edit .ts/.js | 存檔後自動格式化 |
-| UTF-8 編碼驗證 | Write | 中文檔案編碼自動檢測 |
-| worktree 守衛 | Edit/Write | 有 active worktree 時阻止誤改主專案 |
-| 階段記憶載入 | Write *.dto/service/controller/spec.ts | 偵測開發階段、自動載入對應記憶 |
-| 規劃文件攔截 | Read | 讀到規劃文件時提示改用交替實作模式 |
-| 程式碼品質驗證 | Write | 偵測不符規範的錯誤處理、迴圈內 save，自動修正 |
-| 配置自動同步 | Edit 配置檔 | 自動同步備份到文件庫專案 |
+- **設計成兩層驗證金字塔**：先確認「v2 跟舊版 v1 輸出一致」，再確認「整條資料鏈（API ↔ 大後台 ↔ DB）一致」。兩層各管一件事，問題出在哪一層一翻就知道。
+- **純程式碼 + DB 查詢驗證，不開瀏覽器**：用程式打 API、查 DB，把三邊的值列成一張表自動標 ✅/❌，而且**過程寫成文件，下次改完可以直接重跑**。
+- **以「前端實際顯示的欄位」為基準**：先讀前端 Vue 程式碼，抽出畫面真正用到的欄位，再回頭比對——避免浪費時間驗證一堆前端根本沒用到的欄位。
+
+### 單行文字流程圖
+
+```
+/verifyOWS {module} → /verify-QA {module}
+（v2 與 v1 比對）      （v2 ↔ 大後台 ↔ DB 三方比對）
+```
+
+### 各 skill 用途
+
+- [`/verifyOWS`](skills/verifyOWS.md)：v2 實作後，把 v1 API 與 v2 API 逐欄位比對，確認輸出一致
+- [`/verify-QA`](skills/verify-QA.md)：欄位映射修好後，三方比對「v2 API ↔ 大後台 API ↔ DB 原始值」，以官網實際顯示的欄位為基準，逐欄位標結果並寫成驗證文件
 
 ---
 
-## 設計方法論（履歷可講的「思考」）
+## 總流程 C：前後端同步／幫前端 debug
 
-1. **單一職責 + 可組合** — 每個 skill 只做一步，靠串接組出不同流程，而非寫一個巨大腳本。
-2. **流程分層而非分散** — 把 N 條情境歸納成 3 條主線，找出共同核心段復用，降低維護面。
-3. **護欄前移** — 把品質規範（DB 安全、格式、型別、身份）做成 Hook 在「動作發生前/後」自動攔截，而非事後 code review 才抓。
-4. **可交接性** — 每個 skill 配設計稿 + 流程圖，整套配置版本控制 + 自動備份，確保不是「只有我會用」。
-5. **去識別化意識** — 設計時就把「流程方法論」與「業務資料」分離，方法論可對外、業務細節留內部。
+### 要解決的目標
+
+前端有兩個專案（官網、後台）。後端改了東西、或前端回報畫面怪怪的時，需要快速對齊「**畫面 ↔ API ↔ DB**」。但畫面顯示錯了，問題可能出在 DB、API、或前端綁定的任何一層，常常變成前後端互相甩鍋。
+
+### workflow 怎麼設計（為何這樣設計）
+
+- **UI-API 索引當橋樑，用後端的能力幫前端 debug**：`/build-ui-index` 掃前端 Vue 程式碼，把每個畫面欄位對應到「哪支 API、哪張 DB 表」建成索引。畫面顯示錯了，問題可能出在 DB、API 或前端任一層——有了這份索引，我能從「畫面上哪個欄位怪」直接反查到後端源頭，即使不是前端專家，也能判斷是後端給錯還是前端用錯。（至於欄位值對不對，由總流程 B 的 `/verify-QA` 讀前端綁定 + 三方比對把關。）
+- **把跨團隊溝通也自動化**：修完之後 `/fxxxf2e` 把「前端該配合改什麼」整理成可直接貼給前端工程師的留言。
+
+### 單行文字流程圖
+
+```
+/pull-frontend → /build-ui-index → /run-frontend → /fxxxf2e
+```
+
+### 各 skill 用途
+
+- [`/pull-frontend`](skills/pull-frontend.md)：拉兩個前端專案最新進度
+- [`/build-ui-index`](skills/build-ui-index.md)：掃前端，建立「UI 元件 ↔ 後端 API」索引（那座橋）
+- [`/run-frontend`](skills/run-frontend.md)：本地啟／停前端 dev server，重現問題
+- [`/fxxxf2e`](skills/fxxxf2e.md)：抽出前端修改建議，產生給前端的罐頭留言
 
 ---
 
-## 成果與價值
+## 總流程 D：橫向漏洞掃描修復
 
-- 把只存在資深工程師腦中的流程，變成 **可重複執行、可被 review、可版本控制** 的標準管線。
-- 降低漏步驟與人為失誤；新人照 `/showFlow` 就能走完整流程。
-- 危險操作（誤連遠端 DB、簽錯身份、誤改主專案）由 Hook 自動擋下。
-- 流程本身可持續演進（`updateDesign` 維護設計稿、`syncCompact` 同步指令）。
+### 要解決的目標
+
+有些問題不是單一 bug，而是**一整類、散在 51 個 API 模組裡的共通漏洞**——例如某種 DTO 欄位型別寫法、某種權限錯誤訊息處理。這種要的不是「修一個」，而是「系統化掃完所有模組、還要記得哪些掃過」。
+
+### workflow 怎麼設計（為何這樣設計）
+
+- **複雜度決定自動化程度**：簡單到不可能改錯的（欄位缺型別轉換），就讓 skill 直接改完跑 build；牽涉判斷的（權限該回 403 還是 404、錯誤訊息傳播鏈），就只生 proposal，回到總流程 A 的核心段讓我人工確認。**該自動的自動、該把關的把關。**
+- **追蹤表 + `-list` 讓 51 個模組可以分批掃**：每個 skill 配一張進度追蹤表（記錄掃過哪些、結果、commit），下 `-list` 就印出「已掃 N/51、還剩哪些、建議下一個掃誰」。把一個大到做不完的工作，**變成可隨時中斷、隨時接續的分批任務**。
+
+### 單行文字流程圖
+
+```
+（輕量・自動修）  /fix-id-string-number {api} → 自動修正 + build → /gcommit-push
+（重量・人工把關）/fixPermissionError {api} → /reviewDoc → /rrDoc → /implement → /check-result → /gcommit-push
+進度查詢          /fix-id-string-number -list   /fixPermissionError -list
+```
+
+### 各 skill 用途
+
+- [`/fix-id-string-number`](skills/fix-id-string-number.md)：掃 DTO 的 id 欄位是否缺型別轉換，直接自動修正 + build 驗證（低複雜度）
+- [`/fixPermissionError`](skills/fixPermissionError.md)：掃 Service + Controller 的權限錯誤處理，產出修復 proposal，再走核心段人工把關（高複雜度）
+- 兩者皆支援 `-list`：讀追蹤表，輸出整體掃描進度與下一個建議掃描對象
 
 ---
 
-## 履歷 Bullet（可直接撈用）
+## 支撐層（貫穿四條流程）
 
-- 設計並維護 ~35 個可組合的 AI 開發指令（Claude Code Skills），將團隊開發 SOP 工程化為 3 條可重複執行的自動化流程
-- 建置 Hook 護欄系統（DB 環境檢查、Git 身份驗證、自動格式化、編碼驗證），將品質規範從「靠人記」轉為「系統強制」
-- 每個流程附流程圖與設計稿，確保可維護、可交接、可持續演進
-- 體現能力：流程設計、開發者工具、自動化、AI 工程、可維護性思考
+上面四條流程能「不靠人記、可交接」，靠的是底下這層基礎建設。
+
+### Hook 護欄——品質與安全從「靠人記」變成「系統強制」
+
+最危險的不是不會做，而是「明明知道規則，某次忘了」。我把這些規範做成 Claude Code Hook，在動作發生的前一刻／後一刻自動攔截，而不是等事後 code review 才抓：
+
+| Hook | 觸發時機 | 自動做什麼 |
+|------|---------|-----------|
+| local DB 檢查 | 跑 Bash 指令時 | 偵測到 migration 但連的是遠端 DB → 直接擋下 |
+| Git 身份守衛 | `git commit` 時 | 強制正確的 commit 身份簽名 |
+| worktree 守衛 | Edit/Write 時 | 有 active worktree 卻想改主專案 → 擋下並提示 |
+| 自動 Prettier | 存 `.ts/.js` 時 | 自動格式化，不必手動跑 |
+| 階段記憶載入 | 寫 `*.dto/service/controller.ts` 時 | 自動載入對應階段的開發規範 |
+| 規劃文件攔截 | 讀到規劃文件時 | 提示改用正確的交替實作模式 |
+
+### 其他支撐
+
+- **[`/showFlow`](skills/showFlow.md) + proposal 置頂進度表**：流程隨時可視化；進度表由各 skill 自動更新 ✅/👉，接手的人一眼看到走到哪。
+- **設計稿維護（[`/updateDesign`](skills/updateDesign.md)）**：改動一個 skill 時，一併同步它的定義檔、流程圖與設計稿——確保這套系統「不是只有我會用」。
+- **對話壓縮防護（[`/syncCompact`](skills/syncCompact.md)）**：長對話被 AI 自動壓縮時容易遺失上下文，這個 skill 把「壓縮後必須保留的關鍵資訊（工作路徑、流程狀態、規則提醒）」同步進 CLAUDE.md，避免接續工作時失憶。
+- **架構知識按需載入（[`/guideArchitecture`](skills/guideArchitecture.md)）**：開發前才載入對應領域的架構知識（權限、檔案上傳、異動紀錄等），用完即丟，也讓同一套知識能跨專案共用。
+- **查工單與文件（[`/findDoc`](skills/findDoc.md)）**：給一張工單，快速查出它的討論進度、提案摘要、實作狀態與相關技術文件。
+
+---
+
