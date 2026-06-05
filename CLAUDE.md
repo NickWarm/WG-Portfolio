@@ -6,11 +6,11 @@
 
 | 路徑 | 內容 |
 | ---- | ---- |
-| `portfolio/imgs/` | 文件用圖片（**已版控**，可壓縮覆寫，需要時 `git checkout` 還原） |
-| `portfolio/ai-collaboration/experience/` | 實戰案例（eagle、trading）——**展示素材**，多由其他專案搬來，非本 repo 運作的系統 |
+| `imgs/` | 文件用圖片（**已版控**，可壓縮覆寫，需要時 `git checkout` 還原） |
+| `portfolio/eagle/`、`portfolio/trading/` | 實戰案例——**展示素材**，多由其他專案搬來，非本 repo 運作的系統 |
 | `workspace/` | 過渡討論、求職準備、**resume（履歷）**、**proposals（概念設計，未驗證）**、**skills（本 repo 自用 skill，見下）**——僅本機，已 `.gitignore` |
 
-> ⚠️ `experience/` 底下的 `*_skill_proposal.md`、design-docs 是**作品集內容**，
+> ⚠️ `portfolio/eagle/`、`portfolio/trading/` 底下的 `*_skill_proposal.md`、design-docs 是**作品集內容**，
 > 用來呈現我駕馭 Claude Code 的思路，**不是**本 repo 安裝啟用的 skill。
 > 本 repo 真正掛載運作的 skill 在 `workspace/skills/`（本機留存、不版控）。
 > proposals 同樣已移到 `workspace/proposals/`（本機留存、不版控）。
@@ -49,5 +49,5 @@
 
 ## 慣例
 
-- `portfolio/imgs/` 的圖片已版控，`compress-img` 預設覆寫原檔安全（可 git 還原）；不確定時加 `--keep`。
-- 文件內圖片引用用**相對路徑**，從 .md 所在目錄往上算（例：`experience/trading/` 到 `imgs/` 是 `../../../imgs/...`）。
+- `imgs/` 的圖片已版控，`compress-img` 預設覆寫原檔安全（可 git 還原）；不確定時加 `--keep`。
+- 文件內圖片引用用**相對路徑**，從 .md 所在目錄往上算（例：`portfolio/trading/skills/` 到 `imgs/` 是 `../../../imgs/...`）。
