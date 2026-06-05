@@ -151,6 +151,7 @@
 ### 情境 3: 自動化建立 Tradovate trial account 讓我在模擬倉練習交易
 
 > [`tradovate-new.sh`](portfolio/ai-collaboration/experience/trading/scripts/tradovate-new.sh) + [`tradovate-signup.sh`](portfolio/ai-collaboration/experience/trading/scripts/tradovate-signup.sh)
+>
 > ⚠️ 腳本中的 API 路徑已去識別化，避免在公開平台透露第三方服務的內部 API path
 
 有了 mail.tm 能讓程式收信，又有了 `/sniff` 找出來的兩個 API，接下來就是把它們串起來。
