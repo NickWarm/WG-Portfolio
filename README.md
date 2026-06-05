@@ -230,12 +230,12 @@ Trading View 的 Pine Script 只能跑在 TradingView 的 sandbox 裡。
 
 我把它包成一套共用的快取機制： cookie 存在一個 JSON 檔裡，7 天過期後自動更新，所有工具共用同一份。
 
-最後包成了 [`/chart-archive`](portfolio/trading/skills/chart-archive.md) skill 和 [`chart-archive.mjs`](portfolio/trading/scripts/chart-archive.mjs)，支援 7 個時間週期（從 1 分Ｋ到 1 Weak 的 K 棒資料），每天跑一次就能把最新的K棒歸檔到本地。
+最後包成了 [`/chart-archive`](portfolio/trading/skills/chart-archive.md) skill 和 [`chart-archive.mjs`](portfolio/trading/scripts/chart-archive.mjs)，支援 7 個時間週期（從 1 分Ｋ到 1 Week 的 K 棒資料），每天跑一次就能把最新的K棒歸檔到本地。
 
 ### 情境 2: 如何讓 Claude Code 理解我在 TradingView 上面畫的圖
 
-> - [`/draw-verify`](portfolio/ai-collaboration/experience/trading/skills/draw-verify.md) + [`draw-verify.mjs`](portfolio/ai-collaboration/experience/trading/scripts/draw-verify.mjs) + 
-> - [`/ig`](portfolio/ai-collaboration/experience/trading/skills/ig.md) + [`fetch-indicator-graphic.mjs`](portfolio/ai-collaboration/experience/trading/scripts/fetch-indicator-graphic.mjs)
+> - [`/draw-verify`](portfolio/trading/skills/draw-verify.md) + [`draw-verify.mjs`](portfolio/trading/scripts/draw-verify.mjs)
+> - [`/ig`](portfolio/trading/skills/ig.md) + [`fetch-indicator-graphic.mjs`](portfolio/trading/scripts/fetch-indicator-graphic.mjs)
 
 
 K棒資料有了，但接下來的問題是：我的開發流程是「先在 TradingView 上手動畫圖做標記，再用程式去驗證邏輯」。比如我會在圖表上畫兩條線標出盤整區間、標出突破點、畫出亞當目標價。但 Claude Code 看不到我的畫面，它不知道我畫了什麼、畫在哪個價格。
@@ -253,7 +253,7 @@ K棒資料有了，但接下來的問題是：我的開發流程是「先在 Tra
 
 這很關鍵，因為如果程式拉到的報價跟 TradingView 畫面上看到的不一樣，那後面所有的 Pine Script 開發都建立在錯誤的資料上。
 
-所以我先做了一個驗證工具 [`/draw-verify`](portfolio/ai-collaboration/experience/trading/skills/draw-verify.md) skill 
+所以我先做了一個驗證工具 [`/draw-verify`](portfolio/trading/skills/draw-verify.md) skill 
 
 讓 AI 可以用程式同時拉繪圖報價和 K棒數據，輸出到 terminal，我再對照 TradingView 畫面確認兩邊一致。確認資料一致，我做出來的符合我所看到的，才能繼續往下開發
 
@@ -268,9 +268,12 @@ K棒資料有了，但接下來的問題是：我的開發流程是「先在 Tra
 
 這樣 Claude Code 就能辨識每個繪圖物件代表什麼意思。而且 Pine Script 的指標之間原本因為沙盒限制完全無法互相傳資料，透過這套隱藏標記的機制，等於繞過了這個限制 — 不同指標各自把資訊編碼在繪圖裡，外部程式統一讀取後就能交叉比對。
 
-這就是 [`/ig`](portfolio/ai-collaboration/experience/trading/skills/ig.md) 這個 skill 在做的事。
+這就是 [`/ig`](portfolio/trading/skills/ig.md) 這個 skill 在做的事。
 
-### 情境 3: 如何從零實作出 Eli 的首Ｋ策略的指標，與破框策略的指標
+### 情境 3：如何開發出符合 Pine Scirpt 社群風格且效能好的程式碼
+
+
+### 情境 4: 如何從零實作出 Eli 的首Ｋ策略的指標，與破框策略的指標
 
 
 
