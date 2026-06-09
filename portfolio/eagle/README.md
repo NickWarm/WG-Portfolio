@@ -1,6 +1,6 @@
 # 「飛鷹地產」後端開發的 Claude Code skill workflow
 
-把「飛鷹地產」的後端從 ASP.NET + MSSQL 重寫成 NestJS + PostgreSQL。
+把 [飛鷹地產](https://www.eagle111.com/) 的後端從 [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet) + [MSSQL](https://www.microsoft.com/zh-tw/sql-server) 重寫成 [NestJS](https://nestjs.com/) + [PostgreSQL](https://www.postgresql.org/)。
 
 這是一個大工程，在這過程中，我把日常開發重複性的工作拆成數個 Claude Code skills，讓我的開發像是工廠的自動化生產線一樣，每個環節都是可控，我只專注在核心的大方向是否正確，與是否符合該功能的業務需求。
 
