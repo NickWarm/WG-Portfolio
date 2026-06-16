@@ -56,6 +56,8 @@
 
 而我在 Tradovate 註冊 trial account 這件事，去破解出 Tradovate 背後的註冊 trial 用的 api，以及完全不操作任何 10 分鐘 mail 來做註冊，讓 claude code 用 skill 與 script 幫我完成，也是相同的概念
 
+![img](../../imgs/ShiFu/shifu_3.jpg)
+
 每間公司，需要自動化的痛點又都不同，做自動化這份工作的軟體工程師，應該要很有興趣公司裡所有職位的工作項目。
 
 實際去投入工程師以外的工作，去反思哪邊可以自動化，然後再用駭客的思考方式，去找出程式與 AI 可以自動化的地方。
