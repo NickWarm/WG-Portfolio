@@ -1,6 +1,6 @@
 # Shifu 平台如何使用 AI 讓學生學習更有效率
 
-參閱 104 徵才的條件，需要三篇我寫過的公開文章
+依據徵才條件，附上三篇我寫過的公開文章
 1. [如何打造一天內收到五家面試的履歷，甚至讓面試的老闆寫文章稱讚？ - INSIDE](https://www.inside.com.tw/article/8476-resume)
 2. [已經超過 70 人獲得 Medium 作家鋼鐵V 當面傳授個人品牌經營心法，你還不快上車？ | by NickWarm | Medium](https://medium.com/%E7%AD%96%E7%95%A5%E5%85%88%E6%B1%BA/%E5%B7%B2%E7%B6%93%E8%B6%85%E9%81%8E-70-%E4%BA%BA%E7%8D%B2%E5%BE%97-medium-%E4%BD%9C%E5%AE%B6%E9%8B%BC%E9%90%B5v-%E7%95%B6%E9%9D%A2%E5%82%B3%E6%8E%88%E5%80%8B%E4%BA%BA%E5%93%81%E7%89%8C%E7%B6%93%E7%87%9F%E5%BF%83%E6%B3%95-%E4%BD%A0%E9%82%84%E4%B8%8D%E5%BF%AB%E4%B8%8A%E8%BB%8A-5fd030dee2c8)
 3. [人物側寫：桌遊菜鳥的窄市場 | by NickWarm | Medium](https://medium.com/%E7%AD%96%E7%95%A5%E5%85%88%E6%B1%BA/%E4%BA%BA%E7%89%A9%E5%81%B4%E5%AF%AB-%E6%A1%8C%E9%81%8A%E8%8F%9C%E9%B3%A5%E7%9A%84%E7%AA%84%E5%B8%82%E5%A0%B4-e941b3285656)

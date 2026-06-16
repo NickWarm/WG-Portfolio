@@ -170,7 +170,7 @@
 
 ### 情境 3: 自動化建立 Tradovate trial account 讓我在模擬倉練習交易
 
-> [`tradovate-new.sh`](portfolio/trading/scripts/tradovate-new.sh) + [`tradovate-signup.sh`](portfolio/trading/scripts/tradovate-signup.sh): 串接拋棄式信箱與兩支 API，全自動建立 Tradovate trial 練習帳號
+> [`/ntv`](portfolio/trading/skills/ntv.md) + [`tradovate-new.sh`](portfolio/trading/scripts/tradovate-new.sh) + [`tradovate-signup.sh`](portfolio/trading/scripts/tradovate-signup.sh): 串接拋棄式信箱與兩支 API，全自動建立 Tradovate trial 練習帳號
 >
 > ⚠️ 腳本中的 API 路徑已去識別化，避免在公開平台透露第三方服務的內部 API path
 
